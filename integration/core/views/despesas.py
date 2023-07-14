@@ -4,13 +4,13 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from integration.core.models import Cliente
-from integration.core.serializer import ClienteMS
+from integration.core.models import Despesa 
+from integration.core.serializer import DespesaMS
 
 
-class ClientesViewSet(viewsets.ModelViewSet):
-    queryset = Cliente.objects.all()
-    serializer_class = ClienteMS
+class DespesasViewSet(viewsets.ModelViewSet):
+    queryset = Despesa.objects.all()
+    serializer_class = DespesaMS
     permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self):
@@ -20,8 +20,8 @@ class ClientesViewSet(viewsets.ModelViewSet):
     def list(self, request):
 
         try:
-            clientes = Cliente.objects.all()
-            serializer = ClienteMS(clientes, many=True)
+            despesas = Despesa.objects.all()
+            serializer = DespesaMS(despesas, many=True)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -32,8 +32,8 @@ class ClientesViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk):
 
         try:
-            cliente = Cliente.objects.get(cpf=pk)
-            serializer = ClienteMS(cliente)
+            despesas = Despesa.objects.get(id=pk)
+            serializer = DespesaMS(despesas)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -44,7 +44,7 @@ class ClientesViewSet(viewsets.ModelViewSet):
     def create(self, request):
 
         try:
-            serializer = ClienteMS(data=request.data)
+            serializer = DespesaMS(data=request.data)
 
             if serializer.is_valid():
                 serializer.save()
@@ -59,8 +59,8 @@ class ClientesViewSet(viewsets.ModelViewSet):
     def update(self, request, pk):
 
         try:
-            cliente = Cliente.objects.get(cpf=pk)
-            serializer = ClienteMS(instance=cliente, data=request.data)
+            despesa = Despesa.objects.get(id=pk)
+            serializer = DespesaMS(instance=despesa, data=request.data)
 
             if serializer.is_valid():
                 serializer.save()
@@ -73,13 +73,11 @@ class ClientesViewSet(viewsets.ModelViewSet):
             print("ERROR>>>", err)
             return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request):
-
-        cpf = request.GET.get("cpf")
+    def delete(self, request, pk):
 
         try:
-            cliente = Cliente.objects.get(cpf=cpf)
-            cliente.delete()
+            despesa = Despesa.objects.get(id=pk)
+            despesa.delete()
 
             return Response(status=status.HTTP_200_OK)
 
