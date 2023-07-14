@@ -31,3 +31,10 @@ class Contrato(models.Model):
     vl_comissao = models.FloatField(null=True, blank=True)
     porcentagem = models.FloatField(null=True, blank=True)
     corretor = models.CharField(max_length=255, null=True, blank=True)
+
+class Despesa(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    dt_vencimento = models.DateTimeField(null=True, blank=True)
+    descricao = models.CharField(max_length=255, null=True, blank=True)
+    valor = models.FloatField(null=True, blank=True)
+    situacao = models.CharField(max_length=100, null=True, blank=True)
