@@ -11,3 +11,8 @@ class ContratoMS(serializers.ModelSerializer):
     class Meta:
         model = Contrato 
         fields = '__all__'
+
+class DespesaMS(serializers.ModelSerializer):
+    class Meta:
+        model = Despesa 
+        fields = '__all__'
