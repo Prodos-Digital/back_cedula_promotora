@@ -16,3 +16,8 @@ class DespesaMS(serializers.ModelSerializer):
     class Meta:
         model = Despesa 
         fields = '__all__'
+
+class EmprestimoMS(serializers.ModelSerializer):
+    class Meta:
+        model = Emprestimo 
+        fields = '__all__'
