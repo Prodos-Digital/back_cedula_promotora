@@ -140,3 +140,20 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
         except Exception as err:
             print("ERROR>>>", err)
             return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['GET'], url_path="vencimento")
+    def vencimento_emprestimos(self, request):
+
+        date = request.GET.get("date", datetime.now().date())
+
+        try:
+
+            query = f"SELECT * FROM core_emprestimoitem WHERE dt_vencimento = '{date}' AND dt_pagamento is NULL"
+            vencimentos = EmprestimoItem.objects.raw(query)
+            serializer = EmprestimoItemMS(vencimentos, many=True)
+
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as err:
+            print("ERROR>>>", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
