@@ -87,4 +87,23 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['POST'], url_path='calcular')
     def calc_emprestimo(self, request):
-        print("ACTION")
+
+        data = request.data
+        
+        if data:
+
+            try:
+                vl_capital = data['vl_emprestimo'] / data['qt_parcela']
+                vl_juros = data['vl_emprestimo'] * 0.2
+
+                valores_emprestimo = {
+                    'vl_capital': vl_capital, 
+                    'vl_juros': vl_juros, 
+                    'vl_total': vl_capital + vl_juros
+                }
+
+                return Response(data=valores_emprestimo, status=status.HTTP_200_OK)
+            
+            except Exception as err:
+                print("ERROR>>>", err)
+                return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
