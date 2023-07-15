@@ -148,11 +148,35 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
 
         try:
 
-            query = f"SELECT * FROM core_emprestimoitem WHERE dt_vencimento = '{date}' AND dt_pagamento is NULL"
+            query = f"SELECT * FROM core_emprestimoitem WHERE dt_vencimento <= '{date}' AND dt_pagamento is NULL"
             vencimentos = EmprestimoItem.objects.raw(query)
             serializer = EmprestimoItemMS(vencimentos, many=True)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as err:
+            print("ERROR>>>", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['POST'], url_path="pagamento")
+    def pagamento_emprestimo(self, request):
+
+        data = request.data
+
+        try:
+
+            if data['tp_pagamento'] == 'TOTAL':
+                prestacao = EmprestimoItem.objects.filter(id=data['id_emprestimo_item']).update(dt_pagamento=data['dt_pagamento'])
+
+            else:
+                vencimentos = EmprestimoItem.objects.filter(emprestimo_id=data['emprestimo'], dt_pagamento__isnull=True)
+
+                for prestacao in vencimentos:
+                    prestacao.dt_vencimento += timedelta(days=30)
+
+                    prestacao.save()
+
+            return Response(data=data, status=status.HTTP_200_OK)
 
         except Exception as err:
             print("ERROR>>>", err)
