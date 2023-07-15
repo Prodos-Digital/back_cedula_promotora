@@ -1,11 +1,14 @@
+from django.db import transaction
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from integration.core.models import Emprestimo 
-from integration.core.serializer import EmprestimoMS
+from integration.core.models import Emprestimo, EmprestimoItem 
+from integration.core.serializer import EmprestimoMS, EmprestimoItemMS
+
+from datetime import datetime, timedelta
 
 
 class EmprestimosViewSet(viewsets.ModelViewSet):
@@ -36,21 +39,6 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
             serializer = EmprestimoMS(emprestimo)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
-
-        except Exception as err:
-            print("ERROR>>>", err)
-            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
-
-    def create(self, request):
-
-        try:
-            serializer = EmprestimoMS(data=request.data)
-
-            if serializer.is_valid():
-                serializer.save()
-                return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-
-            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as err:
             print("ERROR>>>", err)
@@ -107,3 +95,48 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
             except Exception as err:
                 print("ERROR>>>", err)
                 return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['POST'], url_path="save")
+    def create_emprestimo(self, request):
+
+        try:
+            with transaction.atomic():
+                data = request.data
+                emprestimo = Emprestimo(**data)
+                emprestimo.save()
+
+                get_days = lambda x: x * 30
+
+                for parcela in range(data['qt_parcela']):
+                    nr_parcela = parcela + 1
+                    date = datetime.now() + timedelta(days=get_days(nr_parcela))
+
+                    new_parcela = EmprestimoItem(
+                        dt_vencimento=date,
+                        nr_parcela=nr_parcela,
+                        dt_pagamento=None,
+                        emprestimo=emprestimo
+                    )
+
+                    new_parcela.save()
+
+            return Response(data=data, status=status.HTTP_200_OK)
+
+        except Exception as err:
+            print("ERROR>>>", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['GET'], url_path="parcelas")
+    def parcelas_emprestimo(self, request):
+
+        try:
+            _id = request.GET.get("id")
+
+            emprestimo_items = EmprestimoItem.objects.filter(emprestimo=_id)
+            serializer = EmprestimoItemMS(emprestimo_items, many=True)
+
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as err:
+            print("ERROR>>>", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
