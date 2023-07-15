@@ -49,6 +49,12 @@ class Emprestimo(models.Model):
     vl_capital = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     vl_juros = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     vl_total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    qt_parcela = models.IntegerField(blank=True, null=True)
-    tp_pagamento = models.CharField(max_length=255, blank=True)
+    qt_parcela = models.DecimalField(max_digits=2, decimal_places=0, blank=True, null=True)
     observacao = models.TextField(blank=True)
+
+class EmprestimoItem(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    dt_vencimento = models.DateField(blank=True, null=True)
+    nr_parcela = models.DecimalField(max_digits=2, decimal_places=0, blank=True, null=True)
+    dt_pagamento = models.DateField(blank=True, null=True)
+    emprestimo = models.ForeignKey(Emprestimo, verbose_name='Emprestimo', related_name='EmprestimoItem', on_delete=models.CASCADE, help_text='Emprestimo')

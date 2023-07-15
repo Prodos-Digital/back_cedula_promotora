@@ -21,3 +21,8 @@ class EmprestimoMS(serializers.ModelSerializer):
     class Meta:
         model = Emprestimo 
         fields = '__all__'
+
+class EmprestimoItemMS(serializers.ModelSerializer):
+    class Meta:
+        model = EmprestimoItem 
+        fields = '__all__'
