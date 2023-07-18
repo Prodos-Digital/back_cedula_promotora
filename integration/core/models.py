@@ -16,7 +16,7 @@ class Cliente(models.Model):
 class Contrato(models.Model):
     id = models.BigAutoField(primary_key=True)
     promotora = models.CharField(max_length=255, null=True, blank=True)
-    dt_digitacao = models.DateTimeField(null=True, blank=True)
+    dt_digitacao = models.DateField(null=True, blank=True)
     nr_contrato = models.CharField(max_length=255, null=True, blank=True)
     no_cliente = models.CharField(max_length=255, null=True, blank=True)
     cpf = models.CharField(max_length=255, null=True, blank=True)
@@ -26,7 +26,7 @@ class Contrato(models.Model):
     vl_contrato = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     qt_parcelas = models.CharField(max_length=255, null=True, blank=True)
     vl_parcela = models.CharField(max_length=255, null=True, blank=True)
-    dt_pag_cliente = models.DateTimeField(null=True, blank=True)
+    dt_pag_cliente = models.DateField(null=True, blank=True)
     dt_pag_comissao = models.CharField(max_length=255, null=True, blank=True)
     vl_comissao = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     porcentagem = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
@@ -34,7 +34,7 @@ class Contrato(models.Model):
 
 class Despesa(models.Model):
     id = models.BigAutoField(primary_key=True)
-    dt_vencimento = models.DateTimeField(null=True, blank=True)
+    dt_vencimento = models.DateField(null=True, blank=True)
     descricao = models.CharField(max_length=255, null=True, blank=True)
     valor = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     situacao = models.CharField(max_length=100, null=True, blank=True)
