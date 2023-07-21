@@ -27,7 +27,7 @@ class DespesasViewSet(viewsets.ModelViewSet):
         print(dt_inicio, dt_final)
         try:
             #despesas = Despesa.objects.all()
-            despesas = Despesa.objects.filter(dt_vencimento__range=[dt_inicio, dt_final])
+            despesas = Despesa.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento')
             serializer = DespesaMS(despesas, many=True)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
