@@ -25,7 +25,7 @@ class Contrato(models.Model):
     banco = models.CharField(max_length=255, null=True, blank=True)
     vl_contrato = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     qt_parcelas = models.CharField(max_length=255, null=True, blank=True)
-    vl_parcela = models.CharField(max_length=255, null=True, blank=True)
+    vl_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     dt_pag_cliente = models.DateField(null=True, blank=True)
     dt_pag_comissao = models.CharField(max_length=255, null=True, blank=True)
     vl_comissao = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
