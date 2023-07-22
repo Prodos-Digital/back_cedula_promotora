@@ -1,1 +1,1 @@
-web: gunicorn delivery.wsgi --log-file -
+web: gunicorn integration.wsgi --log-file -
