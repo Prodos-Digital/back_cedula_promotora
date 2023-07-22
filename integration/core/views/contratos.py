@@ -7,6 +7,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from integration.core.models import Contrato
 from integration.core.serializer import ContratoMS
 
+from datetime import datetime, timedelta
+
 
 class ContratosViewSet(viewsets.ModelViewSet):
     queryset = Contrato.objects.all()
@@ -19,8 +21,12 @@ class ContratosViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
 
+        dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
+        dt_final = request.GET.get("dt_final", datetime.now())
+
         try:
-            contratos = Contrato.objects.all()
+            #contratos = Contrato.objects.all()
+            contratos = Contrato.objects.filter(dt_digitacao__range=[dt_inicio, dt_final]).order_by('-dt_digitacao')
             serializer = ContratoMS(contratos, many=True)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -59,7 +65,7 @@ class ContratosViewSet(viewsets.ModelViewSet):
     def update(self, request, pk):
 
         try:
-            contrato = Contrato.objects.get(nr_contrato=pk)
+            contrato = Contrato.objects.get(id=pk)
             serializer = ContratoMS(instance=contrato, data=request.data)
 
             if serializer.is_valid():
