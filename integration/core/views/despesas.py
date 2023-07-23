@@ -7,6 +7,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from integration.core.models import Despesa 
 from integration.core.serializer import DespesaMS
 
+import pandas as pd
 from datetime import datetime, timedelta
 
 
@@ -29,7 +30,19 @@ class DespesasViewSet(viewsets.ModelViewSet):
             despesas = Despesa.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento')
             serializer = DespesaMS(despesas, many=True)
 
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            df = pd.DataFrame(serializer.data)
+
+            df["valor"] = df["valor"].astype(float)
+            soma_por_situacao = df.groupby("situacao")["valor"].sum().reset_index()
+            soma_por_situacao_dict = dict(zip(soma_por_situacao["situacao"], soma_por_situacao["valor"]))
+            soma_por_situacao_dict.update({'total': df["valor"].sum()})
+
+            data = {
+                'data': serializer.data,
+                'indicadores': soma_por_situacao_dict 
+            }
+
+            return Response(data=data, status=status.HTTP_200_OK)
 
         except Exception as err:
             print("ERROR>>>", err)
