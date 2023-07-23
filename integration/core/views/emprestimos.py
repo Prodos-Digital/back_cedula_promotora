@@ -22,8 +22,12 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
 
+        dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
+        dt_final = request.GET.get("dt_final", datetime.now())
+
         try:
-            emprestimos = Emprestimo.objects.all()
+            #emprestimos = Emprestimo.objects.all()
+            emprestimos = Emprestimo.objects.filter(dt_emprestimo__range=[dt_inicio, dt_final]).order_by('dt_emprestimo')
             serializer = EmprestimoMS(emprestimos, many=True)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
