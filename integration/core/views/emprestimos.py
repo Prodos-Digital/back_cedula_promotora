@@ -8,6 +8,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from integration.core.models import Emprestimo, EmprestimoItem 
 from integration.core.serializer import EmprestimoMS, EmprestimoItemMS
 
+import pandas as pd
 from datetime import datetime, timedelta
 
 
@@ -30,7 +31,24 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
             emprestimos = Emprestimo.objects.filter(dt_emprestimo__range=[dt_inicio, dt_final]).order_by('dt_emprestimo')
             serializer = EmprestimoMS(emprestimos, many=True)
 
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            df = pd.DataFrame(serializer.data)
+
+            df["vl_emprestimo"] = df["vl_emprestimo"].astype(float)
+            df["vl_capital"] = df["vl_capital"].astype(float)
+            df["vl_juros"] = df["vl_juros"].astype(float)
+            df["vl_total"] = df["vl_total"].astype(float)
+
+            data = {
+                'data': serializer.data,
+                'indicadores': {
+                    "vl_emprestimo": df["vl_emprestimo"].sum(),
+                    "vl_capital": df["vl_capital"].sum(),
+                    "vl_juros": df["vl_juros"].sum(),
+                    "vl_total": df["vl_total"].sum()
+                }
+            }
+
+            return Response(data=data, status=status.HTTP_200_OK)
 
         except Exception as err:
             print("ERROR>>>", err)
