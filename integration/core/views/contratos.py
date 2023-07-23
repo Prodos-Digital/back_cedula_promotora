@@ -7,6 +7,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from integration.core.models import Contrato
 from integration.core.serializer import ContratoMS
 
+import pandas as pd
 from datetime import datetime, timedelta
 
 
@@ -29,7 +30,22 @@ class ContratosViewSet(viewsets.ModelViewSet):
             contratos = Contrato.objects.filter(dt_digitacao__range=[dt_inicio, dt_final]).order_by('-dt_digitacao')
             serializer = ContratoMS(contratos, many=True)
 
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            df = pd.DataFrame(serializer.data)
+
+            df["vl_contrato"] = df["vl_contrato"].astype(float)
+            df["vl_parcela"] = df["vl_parcela"].astype(float)
+            df["vl_comissao"] = df["vl_comissao"].astype(float)
+
+            data = {
+                'data': serializer.data,
+                'indicadores': {
+                    "vl_contrato": df["vl_contrato"].sum(),
+                    "vl_parcela": df["vl_parcela"].sum(),
+                    "vl_comissao": df["vl_comissao"].sum()
+                }
+            }
+
+            return Response(data=data, status=status.HTTP_200_OK)
 
         except Exception as err:
             print("ERROR>>>", err)

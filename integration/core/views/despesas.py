@@ -35,11 +35,14 @@ class DespesasViewSet(viewsets.ModelViewSet):
             df["valor"] = df["valor"].astype(float)
             soma_por_situacao = df.groupby("situacao")["valor"].sum().reset_index()
             soma_por_situacao_dict = dict(zip(soma_por_situacao["situacao"], soma_por_situacao["valor"]))
-            soma_por_situacao_dict.update({'total': df["valor"].sum()})
 
             data = {
                 'data': serializer.data,
-                'indicadores': soma_por_situacao_dict 
+                'indicadores': {
+                    "pago": soma_por_situacao_dict.get("pago", 0), 
+                    "pendente": soma_por_situacao_dict.get("pendente", 0), 
+                    "total": df["valor"].sum()
+                }
             }
 
             return Response(data=data, status=status.HTTP_200_OK)
