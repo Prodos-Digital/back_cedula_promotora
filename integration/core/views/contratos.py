@@ -32,6 +32,17 @@ class ContratosViewSet(viewsets.ModelViewSet):
 
             df = pd.DataFrame(serializer.data)
 
+            if df.empty:
+                data = {
+                    'data': [],
+                    'indicadores': {
+                         "vl_contrato": 0,
+                         "vl_parcela": 0,
+                         "vl_comissao": 0
+                    }
+                }
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
             df["vl_contrato"] = df["vl_contrato"].astype(float)
             df["vl_parcela"] = df["vl_parcela"].astype(float)
             df["vl_comissao"] = df["vl_comissao"].astype(float)

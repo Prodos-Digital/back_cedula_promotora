@@ -32,6 +32,18 @@ class DespesasViewSet(viewsets.ModelViewSet):
 
             df = pd.DataFrame(serializer.data)
 
+            if df.empty:
+                data = {
+                    'data': [],
+                    'indicadores': {
+                        "pago": 0, 
+                        "pendente": 0, 
+                        "total": 0
+                    }
+                }
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+           
+
             df["valor"] = df["valor"].astype(float)
             soma_por_situacao = df.groupby("situacao")["valor"].sum().reset_index()
             soma_por_situacao_dict = dict(zip(soma_por_situacao["situacao"], soma_por_situacao["valor"]))

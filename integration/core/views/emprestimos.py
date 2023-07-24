@@ -33,6 +33,18 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
 
             df = pd.DataFrame(serializer.data)
 
+            if df.empty:
+                data = {
+                    'data': [],
+                    'indicadores': {
+                        "vl_emprestimo": 0,
+                        "vl_capital": 0,
+                        "vl_juros": 0,
+                        "vl_total": 0
+                    }
+                }
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
             df["vl_emprestimo"] = df["vl_emprestimo"].astype(float)
             df["vl_capital"] = df["vl_capital"].astype(float)
             df["vl_juros"] = df["vl_juros"].astype(float)
