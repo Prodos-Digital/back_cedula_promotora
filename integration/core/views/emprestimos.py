@@ -43,6 +43,7 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
                         "vl_total": 0
                     }
                 }
+
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
             df["vl_emprestimo"] = df["vl_emprestimo"].astype(float)
@@ -149,6 +150,7 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
                         dt_vencimento=date,
                         nr_parcela=nr_parcela,
                         dt_pagamento=None,
+                        tp_pagamento="PARCELA",
                         emprestimo=emprestimo
                     )
 
@@ -205,8 +207,19 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
             else:
                 vencimentos = EmprestimoItem.objects.filter(emprestimo_id=data['emprestimo'], dt_pagamento__isnull=True)
 
+                parcela_juros = EmprestimoItem(
+                        dt_vencimento=vencimentos[0].dt_vencimento,
+                        nr_parcela=vencimentos[0].nr_parcela,
+                        dt_pagamento=data['dt_pagamento'],
+                        tp_pagamento="JUROS",
+                        emprestimo=vencimentos[0].emprestimo
+                )
+
+                parcela_juros.save()
+
                 for prestacao in vencimentos:
                     prestacao.dt_vencimento += timedelta(days=30)
+                    prestacao.nr_parcela += 1
 
                     prestacao.save()
 
