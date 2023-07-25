@@ -51,6 +51,15 @@ class Emprestimo(models.Model):
     vl_total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     qt_parcela = models.DecimalField(max_digits=2, decimal_places=0, blank=True, null=True)
     observacao = models.TextField(blank=True)
+    cpf = models.CharField(max_length=11, null=True, blank=True)
+    telefone = models.CharField(max_length=20, null=True, blank=True)
+    cep = models.CharField(max_length=20, null=True)
+    logradouro = models.CharField(max_length=255, null=True)
+    numLogr = models.CharField(max_length=255, null=True)
+    complLogr = models.CharField(max_length=255, null=True)
+    bairro = models.CharField(max_length=255, null=True)
+    cidade = models.CharField(max_length=255, null=True)
+    estado = models.CharField(max_length=10, null=True)
 
 class EmprestimoItem(models.Model):
     id = models.BigAutoField(primary_key=True)
