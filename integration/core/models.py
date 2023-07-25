@@ -57,4 +57,5 @@ class EmprestimoItem(models.Model):
     dt_vencimento = models.DateField(blank=True, null=True)
     nr_parcela = models.DecimalField(max_digits=2, decimal_places=0, blank=True, null=True)
     dt_pagamento = models.DateField(blank=True, null=True)
+    tp_pagamento = models.CharField(max_length=100, null=True, blank=True)
     emprestimo = models.ForeignKey(Emprestimo, verbose_name='Emprestimo', related_name='EmprestimoItem', on_delete=models.CASCADE, help_text='Emprestimo')
