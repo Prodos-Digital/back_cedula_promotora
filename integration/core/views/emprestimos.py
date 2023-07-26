@@ -168,7 +168,7 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
         try:
             _id = request.GET.get("id")
 
-            emprestimo_items = EmprestimoItem.objects.filter(emprestimo=_id)
+            emprestimo_items = EmprestimoItem.objects.filter(emprestimo=_id).order_by('dt_vencimento')
             serializer = EmprestimoItemMS(emprestimo_items, many=True)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
