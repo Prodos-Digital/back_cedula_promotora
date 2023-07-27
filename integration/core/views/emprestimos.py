@@ -184,19 +184,18 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
 
         try:
 
-            query = "select ce.cpf, ce.no_cliente, ce2.* from core_emprestimo ce join core_emprestimoitem ce2 on ce.id = ce2.emprestimo_id where ce2.dt_vencimento <= current_date and ce2.dt_pagamento is null;"
-            vencimentos = Emprestimo.objects.raw(query)
+            query = "select ce.cpf, ce.no_cliente, ce.telefone, ce2.* from core_emprestimo ce join core_emprestimoitem ce2 on ce.id = ce2.emprestimo_id where ce2.dt_vencimento <= current_date and ce2.dt_pagamento is null;"
+            vencimentos = Emprestimo.objects.raw(query)           
 
             data = []
-            for item in vencimentos:
+            for item in vencimentos:                
                 data += [{
                     'cpf': item.cpf,
                     'no_cliente': item.no_cliente,
                     'id': item.id,
+                    'telefone': item.telefone,
                     'dt_vencimento': item.dt_vencimento,
-                    'nr_parcela': item.nr_parcela,
-                    'dt_pagamento': item.dt_pagamento,
-                    'tp_pagamento': item.tp_pagamento,
+                    'nr_parcela': item.nr_parcela,                    
                     'emprestimo': item.emprestimo_id
                 }]
 
