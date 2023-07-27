@@ -184,11 +184,23 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
 
         try:
 
-            query = f"SELECT * FROM core_emprestimoitem WHERE dt_vencimento <= '{date}' AND dt_pagamento is NULL"
-            vencimentos = EmprestimoItem.objects.raw(query)
-            serializer = EmprestimoItemMS(vencimentos, many=True)
+            query = "select ce.cpf, ce.no_cliente, ce2.* from core_emprestimo ce join core_emprestimoitem ce2 on ce.id = ce2.emprestimo_id where ce2.dt_vencimento <= current_date and ce2.dt_pagamento is null;"
+            vencimentos = Emprestimo.objects.raw(query)
 
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            data = []
+            for item in vencimentos:
+                data += [{
+                    'cpf': item.cpf,
+                    'no_cliente': item.no_cliente,
+                    'id': item.id,
+                    'dt_vencimento': item.dt_vencimento,
+                    'nr_parcela': item.nr_parcela,
+                    'dt_pagamento': item.dt_pagamento,
+                    'tp_pagamento': item.tp_pagamento,
+                    'emprestimo': item.emprestimo_id
+                }]
+
+            return Response(data=data, status=status.HTTP_200_OK)
 
         except Exception as err:
             print("ERROR>>>", err)
