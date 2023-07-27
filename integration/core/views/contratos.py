@@ -75,6 +75,8 @@ class ContratosViewSet(viewsets.ModelViewSet):
             return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):
+        print('Entrou no cadastrar contrato')
+        print(request.data)
 
         try:
             serializer = ContratoMS(data=request.data)

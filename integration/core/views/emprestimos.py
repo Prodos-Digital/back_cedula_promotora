@@ -28,7 +28,7 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
 
         try:
             #emprestimos = Emprestimo.objects.all()
-            emprestimos = Emprestimo.objects.filter(dt_emprestimo__range=[dt_inicio, dt_final]).order_by('dt_emprestimo')
+            emprestimos = Emprestimo.objects.filter(dt_emprestimo__range=[dt_inicio, dt_final]).order_by('-dt_emprestimo')
             serializer = EmprestimoMS(emprestimos, many=True)
 
             df = pd.DataFrame(serializer.data)
