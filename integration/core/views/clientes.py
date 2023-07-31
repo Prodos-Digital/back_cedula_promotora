@@ -75,10 +75,10 @@ class ClientesViewSet(viewsets.ModelViewSet):
 
     def delete(self, request):
 
-        cpf = request.GET.get("cpf")
+        id = request.GET.get("id")
 
         try:
-            cliente = Cliente.objects.get(cpf=cpf)
+            cliente = Cliente.objects.get(id=id)
             cliente.delete()
 
             return Response(status=status.HTTP_200_OK)

@@ -110,10 +110,10 @@ class ContratosViewSet(viewsets.ModelViewSet):
 
     def delete(self, request):
 
-        nr_contrato = request.GET.get("nr_contrato")
+        id = request.GET.get("id")
 
         try:
-            contrato = Contrato.objects.get(nr_contrato=nr_contrato)
+            contrato = Contrato.objects.get(id=id)
             contrato.delete()
 
             return Response(status=status.HTTP_200_OK)
