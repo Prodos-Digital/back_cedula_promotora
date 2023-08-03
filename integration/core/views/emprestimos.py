@@ -135,8 +135,9 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
     def create_emprestimo(self, request):
 
         try:
+            data = request.data
+
             with transaction.atomic():
-                data = request.data
                 emprestimo = Emprestimo(**data)
                 emprestimo.save()
 
@@ -144,7 +145,8 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
 
                 for parcela in range(data['qt_parcela']):
                     nr_parcela = parcela + 1
-                    date = datetime.now() + timedelta(days=get_days(nr_parcela))
+                    data_emprestimo = datetime.strptime(data['dt_emprestimo'], "%Y-%m-%d")
+                    date = data_emprestimo + timedelta(days=get_days(nr_parcela))
 
                     new_parcela = EmprestimoItem(
                         dt_vencimento=date,
