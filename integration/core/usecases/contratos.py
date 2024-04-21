@@ -20,7 +20,7 @@ class DashboardContratos():
                 'corretores': [],
                 'convenios': [],
                 'promotoras': [],
-                'operacoes': [],
+                'operacoes': [],               
                 'tt_contratos': 0,
                 'tt_vl_contratos': 0,
                 'tt_vl_comissoes': 0
@@ -33,7 +33,7 @@ class DashboardContratos():
         '''
             VISÕES OBRIGATÓRIAS:
             - VLR TOTAL CONTRATOS
-            - VLR COMISSÃO
+            - VLR COMISSÃO (pendente por corretores)
             - QTD TT CONTRATOS
 
             FILTROS:
@@ -60,6 +60,7 @@ class DashboardContratos():
         tt_contratos = df[['nr_contrato']].count()
         tt_vl_contratos = df[['vl_contrato']].sum()
         tt_vl_comissoes = df[['vl_comissao']].sum()
+        print(tt_contratos)
 
         #Totalizadores BANCOS
         bancos = df.groupby(['banco'], as_index=False)['vl_contrato'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
@@ -94,7 +95,7 @@ class DashboardContratos():
                 'corretores': tt_corretores,
                 'convenios': tt_convenios,
                 'promotoras': tt_promotoras,
-                'operacoes': tt_operacoes,
+                'operacoes': tt_operacoes,                
                 'tt_contratos': tt_contratos,
                 'tt_vl_contratos': tt_vl_contratos,
                 'tt_vl_comissoes': tt_vl_comissoes
