@@ -9,6 +9,7 @@ from integration.core.serializer import ContratoMS
 
 import pandas as pd
 from datetime import datetime, timedelta
+from integration.core.usecases.contratos import DashboardContratos
 
 
 class ContratosViewSet(viewsets.ModelViewSet):
@@ -20,13 +21,12 @@ class ContratosViewSet(viewsets.ModelViewSet):
         serializer = super().get_serializer_class()
         return serializer
 
-    def list(self, request):
+    def list(self, request):       
 
         dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
         dt_final = request.GET.get("dt_final", datetime.now())
 
-        try:
-            #contratos = Contrato.objects.all()
+        try:           
             contratos = Contrato.objects.filter(dt_digitacao__range=[dt_inicio, dt_final]).order_by('-dt_digitacao')
             serializer = ContratoMS(contratos, many=True)
 
@@ -75,8 +75,6 @@ class ContratosViewSet(viewsets.ModelViewSet):
             return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):
-        print('Entrou no cadastrar contrato')
-        print(request.data)
 
         try:
             serializer = ContratoMS(data=request.data)
@@ -117,6 +115,62 @@ class ContratosViewSet(viewsets.ModelViewSet):
             contrato.delete()
 
             return Response(status=status.HTTP_200_OK)
+
+        except Exception as err:
+            print("ERROR>>>", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+    @action(detail=False, methods=['GET'], url_path='dashboard')
+    def dashboard_contratos(self, request):        
+
+        dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
+        dt_final = request.GET.get("dt_final", datetime.now())
+
+        try:           
+            contratos = Contrato.objects.filter(dt_digitacao__range=[dt_inicio, dt_final]).order_by('-dt_digitacao')
+            serializer = ContratoMS(contratos, many=True)  
+
+            etl = DashboardContratos()
+            data = etl.execute(serializer.data)         
+
+            return Response(data=data, status=status.HTTP_200_OK)
+
+        except Exception as err:
+            print("ERROR>>>", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+    @action(detail=False, methods=['GET'], url_path='bancos')
+    def listar_bancos(self, request):        
+
+        try:           
+            data = Contrato.objects.filter().values('banco').distinct().order_by('banco') 
+            return Response(data=data, status=status.HTTP_200_OK)
+
+        except Exception as err:
+            print("ERROR>>>", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+    @action(detail=False, methods=['GET'], url_path='promotoras')
+    def listar_promotoras(self, request):        
+
+        try:           
+            data = Contrato.objects.filter().values('promotora').distinct().order_by('promotora') 
+            return Response(data=data, status=status.HTTP_200_OK)
+
+        except Exception as err:
+            print("ERROR>>>", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+    @action(detail=False, methods=['GET'], url_path='corretores')
+    def listar_corretores(self, request):        
+
+        try:           
+            data = Contrato.objects.filter().values('corretor').distinct().order_by('corretor') 
+            return Response(data=data, status=status.HTTP_200_OK)
 
         except Exception as err:
             print("ERROR>>>", err)
