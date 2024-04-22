@@ -26,7 +26,7 @@ class ContratosViewSet(viewsets.ModelViewSet):
         dt_final = request.GET.get("dt_final", datetime.now())
 
         try:           
-            contratos = Contrato.objects.filter(dt_digitacao__range=[dt_inicio, dt_final]).order_by('-dt_digitacao')
+            contratos = Contrato.objects.filter(dt_pag_cliente__range=[dt_inicio, dt_final]).order_by('-dt_digitacao')
             serializer = ContratoMS(contratos, many=True)
 
             df = pd.DataFrame(serializer.data)
