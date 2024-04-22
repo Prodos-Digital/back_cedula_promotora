@@ -6,6 +6,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from integration.core.models import Cliente
 from integration.core.serializer import ClienteMS
+from integration.core.usecases.clientes import DashboardClientes
+
 
 
 class ClientesViewSet(viewsets.ModelViewSet):
@@ -82,6 +84,24 @@ class ClientesViewSet(viewsets.ModelViewSet):
             cliente.delete()
 
             return Response(status=status.HTTP_200_OK)
+
+        except Exception as err:
+            print("ERROR>>>", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['GET'], url_path='dashboard')
+    def dashboard_clientes(self, request):       
+       
+        try:            
+
+            clientes = Cliente.objects.all()
+            serializer = ClienteMS(clientes, many=True)
+
+            # Contabilizar os dados utilizando pandas
+            etl = DashboardClientes()
+            data = etl.execute(serializer.data)         
+
+            return Response(data=data, status=status.HTTP_200_OK)
 
         except Exception as err:
             print("ERROR>>>", err)

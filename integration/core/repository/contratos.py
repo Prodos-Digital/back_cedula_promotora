@@ -13,13 +13,13 @@ class ContratosRepository():
         
         SQL = f"""
             SELECT * FROM core_contrato cc 
-            WHERE cc.dt_digitacao BETWEEN '{dt_inicio}' AND '{dt_final}' 
+            WHERE cc.dt_pag_cliente BETWEEN '{dt_inicio}' AND '{dt_final}' 
             {CONVENIOS_QUERY}
             {BANCOS_QUERY}
             {CORRETORES_QUERY}
             {PROMOTORAS_QUERY}
             {OPERACOES_QUERY}
-            ORDER BY dt_digitacao DESC;
+            ORDER BY dt_pag_cliente DESC;
         """       
 
         print(SQL)

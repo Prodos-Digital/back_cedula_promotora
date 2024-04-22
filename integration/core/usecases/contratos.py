@@ -1,15 +1,4 @@
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
-
-from integration.core.models import Contrato
-from integration.core.serializer import ContratoMS
-
 import pandas as pd
-from datetime import datetime, timedelta
-
 
 class DashboardContratos():
 
@@ -33,7 +22,7 @@ class DashboardContratos():
         '''
             VISÕES OBRIGATÓRIAS:
             - VLR TOTAL CONTRATOS
-            - VLR COMISSÃO (pendente por corretores)
+            - VLR TOAL COMISSÃO 
             - QTD TT CONTRATOS
 
             FILTROS:
