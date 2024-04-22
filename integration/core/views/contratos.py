@@ -131,11 +131,23 @@ class ContratosViewSet(viewsets.ModelViewSet):
         corretores_query = request.GET.get("corretores", None) if request.GET.get("corretores") else ""
         operacoes_query = request.GET.get("operacoes", None) if request.GET.get("operacoes") else ""
 
+        # print('convenios_query...........: ', convenios_query)
+        # print('bancos_query..............: ', bancos_query)
+        # print('promotoras_query..........: ', promotoras_query)
+        # print('corretores_query..........: ', corretores_query)
+        # print('operacoes_query...........: ', operacoes_query)
+
         convenios = tuple(convenios_query.split(',')) if len(convenios_query.split(',')) > 1 else convenios_query 
         bancos = tuple(bancos_query.split(',')) if len(bancos_query.split(',')) > 1 else bancos_query 
         promotoras = tuple(promotoras_query.split(',')) if len(promotoras_query.split(',')) > 1 else promotoras_query 
         corretores = tuple(corretores_query.split(',')) if len(corretores_query.split(',')) > 1 else corretores_query 
         operacoes = tuple(operacoes_query.split(',')) if len(operacoes_query.split(',')) > 1 else operacoes_query 
+
+        # print('convenios.................: ', convenios)
+        # print('bancos....................: ', bancos)
+        # print('promotoras................: ', promotoras)
+        # print('corretores................: ', corretores)
+        # print('operacoes.................: ', operacoes)
 
         try:            
 
