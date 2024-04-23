@@ -22,7 +22,7 @@ class ContratosRepository():
             ORDER BY dt_pag_cliente DESC;
         """       
 
-        print(SQL)
+        #print(SQL)
 
         with connection.cursor() as cursor:   
 
