@@ -47,7 +47,7 @@ class DashboardClientes():
                 'especies': tt_especies,
                 'tt_especies': {
                     'total': tt_clientes_especies,
-                    'sem_especie': tt_clientes_sem_especies
+                    'sem_especie': tt_clientes_especies - tt_clientes_sem_especies
                 }
             },            
         }
