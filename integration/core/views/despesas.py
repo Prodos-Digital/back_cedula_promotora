@@ -10,6 +10,8 @@ from integration.core.serializer import DespesaMS
 import pandas as pd
 from datetime import datetime, timedelta
 
+from integration.core.usecases.despesas import DashboardDespesas
+
 
 class DespesasViewSet(viewsets.ModelViewSet):
     queryset = Despesa.objects.all()
@@ -114,6 +116,26 @@ class DespesasViewSet(viewsets.ModelViewSet):
             despesa.delete()
 
             return Response(status=status.HTTP_200_OK)
+
+        except Exception as err:
+            print("ERROR>>>", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['GET'], url_path='dashboard')
+    def dashboard_despesas(self, request):  
+
+        dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
+        dt_final = request.GET.get("dt_final", datetime.now())
+
+        try:
+           
+            despesas = Despesa.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento')
+            serializer = DespesaMS(despesas, many=True)
+
+            etl = DashboardDespesas()
+            data = etl.execute(serializer.data)             
+
+            return Response(data=data, status=status.HTTP_200_OK)
 
         except Exception as err:
             print("ERROR>>>", err)
