@@ -6,6 +6,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from integration.core.models import Despesa 
 from integration.core.serializer import DespesaMS
+from integration.core.models import Contrato 
+from integration.core.serializer import ContratoMS
 
 import pandas as pd
 from datetime import datetime, timedelta
@@ -130,10 +132,13 @@ class DespesasViewSet(viewsets.ModelViewSet):
         try:
            
             despesas = Despesa.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento')
-            serializer = DespesaMS(despesas, many=True)
+            serializer_despesas = DespesaMS(despesas, many=True)
+
+            contratos = Contrato.objects.filter(dt_pag_cliente__range=[dt_inicio, dt_final]).order_by('dt_pag_cliente')
+            serializer_contratos = ContratoMS(contratos, many=True)
 
             etl = DashboardDespesas()
-            data = etl.execute(serializer.data)             
+            data = etl.execute(serializer_despesas.data, serializer_contratos.data)             
 
             return Response(data=data, status=status.HTTP_200_OK)
 

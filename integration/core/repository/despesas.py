@@ -20,3 +20,4 @@ class DespesasRepository():
             data = dictfetchall(cursor)
 
         return data if data else []
+  
