@@ -126,8 +126,13 @@ class DespesasViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'], url_path='dashboard')
     def dashboard_despesas(self, request):  
 
-        dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
-        dt_final = request.GET.get("dt_final", datetime.now())
+        # dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
+        # dt_final = request.GET.get("dt_final", datetime.now())
+
+        dt_inicio = '2023-01-01'
+        dt_final = '2024-05-02'
+
+        # http://127.0.0.1:8005/integration/despesas/dashboard/
 
         try:
            

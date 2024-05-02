@@ -74,7 +74,18 @@ class DashboardDespesas():
         df_merged.fillna(value=replace_values, inplace=True)
         df_merged = df_merged.drop(columns=['index_x', 'index_y'])
 
+        df_merged['lucro_despesa_total_mensal'] = df_merged['vlr_total_comissao'] - df_merged['vlr_total_despesas']
+
+        df_merged_despesas = df_merged.groupby(['ano_mes_despesas'], as_index=False)['lucro_despesa_total_mensal'].agg(['sum']).rename(columns={'sum': 'vlr_total'}).sort_values(by=['vlr_total'], ascending=False).reset_index()
+        df_merged_contratos = df_merged.groupby(['ano_mes_contratos'], as_index=False)['lucro_despesa_total_mensal'].agg(['sum']).rename(columns={'sum': 'vlr_total'}).sort_values(by=['vlr_total'], ascending=False).reset_index()
         
+        df_merged_despesas.rename(columns={'ano_mes_despesas': 'ano_mes'}, inplace=True)
+        df_merged_contratos.rename(columns={'ano_mes_contratos': 'ano_mes'}, inplace=True)
+
+        # Concatenar os DataFrames
+        novo_df = pd.concat([df_merged_despesas[['ano_mes', 'vlr_total']], df_merged_contratos[['ano_mes', 'vlr_total']]])
+        novo_df = novo_df.sort_values(by='ano_mes')
+
         breakpoint()
 
         return {
