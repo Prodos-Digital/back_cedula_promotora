@@ -69,3 +69,16 @@ class EmprestimoItem(models.Model):
     dt_pagamento = models.DateField(blank=True, null=True)
     tp_pagamento = models.CharField(max_length=100, null=True, blank=True)
     emprestimo = models.ForeignKey(Emprestimo, verbose_name='Emprestimo', related_name='EmprestimoItem', on_delete=models.CASCADE, help_text='Emprestimo')
+
+class Lojas(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    is_active = ''
+    sg_loja = ''
+    endereco = ''
+    nr_endereco = ''
+    bairro = ''
+    cidade = ''
+    uf = ''
+    cep = ''
+    fone = ''
+
