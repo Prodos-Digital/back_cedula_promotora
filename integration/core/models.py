@@ -71,7 +71,7 @@ class EmprestimoItem(models.Model):
     emprestimo = models.ForeignKey(Emprestimo, verbose_name='Emprestimo', related_name='EmprestimoItem', on_delete=models.CASCADE, help_text='Emprestimo')
 
 class Lojas(models.Model):
-    id = models.BigAutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True) #nextval('core_lojas_id_seq'::regclass)
     is_active = models.BooleanField(default=True, blank=True, null=True)
     sg_loja = models.CharField(max_length=30, blank=True, null=True)
     
