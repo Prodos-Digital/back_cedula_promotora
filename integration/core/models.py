@@ -72,13 +72,7 @@ class EmprestimoItem(models.Model):
 
 class Lojas(models.Model):
     id = models.BigAutoField(primary_key=True)
-    is_active = ''
-    sg_loja = ''
-    endereco = ''
-    nr_endereco = ''
-    bairro = ''
-    cidade = ''
-    uf = ''
-    cep = ''
-    fone = ''
+    is_active = models.BooleanField(default=True, blank=True, null=True)
+    sg_loja = models.CharField(max_length=30, blank=True, null=True)
+    
 

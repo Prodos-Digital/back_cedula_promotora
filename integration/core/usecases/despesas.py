@@ -4,11 +4,11 @@ import pandas as pd
 
 class DashboardDespesas():
 
+   
+
     def empty_object(self):
         return {
-            'indicadores': {
-                'despesas': [],                
-            },         
+             'despesas': [],       
         }
 
     def execute(self, despesas, contratos):       
@@ -21,7 +21,7 @@ class DashboardDespesas():
         df_contratos = pd.DataFrame.from_dict(contratos)
         pd.set_option('display.expand_frame_repr', False)    
 
-        if df_despesas.empty: 
+        if df_despesas.empty and df_contratos.empty: 
              return self.empty_object() 
         
         df_despesas["valor"] = df_despesas["valor"].astype(float) 
@@ -30,7 +30,7 @@ class DashboardDespesas():
         df_despesas['mes'] = df_despesas['dt_vencimento_datetime'].dt.month 
         df_despesas['nome_mes'] = df_despesas['dt_vencimento_datetime'].dt.strftime('%B')
         df_despesas['ano_mes_despesas'] = df_despesas['ano'].astype(str) + "-" +  df_despesas['mes'].astype(str).str.zfill(2) 
-        ano_mes_despesas = df_despesas.groupby(['ano_mes_despesas'], as_index=False)['valor'].agg(['count','sum']).rename(columns={'count': 'qtd_despesas', 'sum': 'vlr_total_despesas'}).sort_values(by=['qtd_despesas'], ascending=False).reset_index()
+        ano_mes_despesas = df_despesas[df_despesas['situacao'] == 'pago'].groupby(['ano_mes_despesas'], as_index=False)['valor'].agg(['count','sum']).rename(columns={'count': 'qtd_despesas', 'sum': 'vlr_total_despesas'}).sort_values(by=['qtd_despesas'], ascending=False).reset_index()
 
         #Totalizadores NATUREZA DAS DEPESAS
         # natureza_despesa = df_despesas.groupby(['natureza_despesa'], as_index=False)['valor'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
@@ -83,22 +83,32 @@ class DashboardDespesas():
         df_merged_contratos.rename(columns={'ano_mes_contratos': 'ano_mes'}, inplace=True)
 
         # Concatenar os DataFrames
-        novo_df = pd.concat([df_merged_despesas[['ano_mes', 'vlr_total']], df_merged_contratos[['ano_mes', 'vlr_total']]])
-        novo_df = novo_df.sort_values(by='ano_mes')
+        df_final = pd.concat([df_merged_despesas[['ano_mes', 'vlr_total']], df_merged_contratos[['ano_mes', 'vlr_total']]])
+        df_final = df_final.sort_values(by='ano_mes')
 
-        breakpoint()
+        meses_ptbr = {
+            1: 'Janeiro',
+            2: 'Fevereiro',
+            3: 'Março',
+            4: 'Abril',
+            5: 'Maio',
+            6: 'Junho',
+            7: 'Julho',
+            8: 'Agosto',
+            9: 'Setembro',
+            10: 'Outubro',
+            11: 'Novembro',
+            12: 'Dezembro'
+        }
+
+        df_final['nome_mes_ano'] = pd.to_datetime(df_final['ano_mes']).dt.month.map(meses_ptbr) + ' ' + pd.to_datetime(df_final['ano_mes']).dt.year.astype(str)
+
+        #print(df_final)
+
+        #breakpoint()
 
         return {
-            'indicadores': {
-                'despesas': {
-                    # 'ano_mes': tt_ano_mes,
-                    # 'naturezas': tt_natureza_despesa,
-                    # 'tipo_despesas': tt_tipo_despesas,
-                    # 'descricoes': tt_descricao,
-                    # 'tipo_loja': tt_tipo_loja
-                },  
-            }, 
-            'data': despesas           
+            'despesas': df_final.to_dict('records'),
         }
 
 if __name__ == '__main__':
