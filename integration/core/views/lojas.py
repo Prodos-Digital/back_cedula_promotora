@@ -18,10 +18,19 @@ class LojasViewSet(viewsets.ModelViewSet):
     def list(self, request):        
 
         try:
+            only_actives = request.GET.get("ativas", "")
+
+            if only_actives:
+                lojas = Lojas.objects.filter(is_active=True)
+                serializer = LojasMS(lojas, many=True)
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            
+           
             lojas = Lojas.objects.all()           
             serializer = LojasMS(lojas, many=True)
-
             return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+            
 
         except Exception as err:
             print("ERROR>>>", err)
@@ -64,8 +73,8 @@ class LojasViewSet(viewsets.ModelViewSet):
 
     def update(self, request, pk):
 
-        try:
-            data = request.data  
+        try:            
+            data = request.data              
             lojas = Lojas.objects.get(id=pk)
             serializer = LojasMS(instance=lojas, data=data)
 
@@ -73,7 +82,7 @@ class LojasViewSet(viewsets.ModelViewSet):
                 serializer.save()
 
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
-
+            
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as err:

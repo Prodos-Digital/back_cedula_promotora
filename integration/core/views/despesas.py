@@ -131,7 +131,9 @@ class DespesasViewSet(viewsets.ModelViewSet):
 
         dt_inicio = '2023-01-01'
         dt_final = '2024-05-02'
-
+        
+        loja = request.GET.get("loja", "")
+        print('loja: ', loja)
         # http://127.0.0.1:8005/integration/despesas/dashboard/
 
         try:
