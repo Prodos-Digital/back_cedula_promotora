@@ -40,7 +40,7 @@ class Despesa(models.Model):
     situacao = models.CharField(max_length=100, null=True, blank=True)
     tp_despesa = models.CharField(max_length=100, null=True, blank=True)
     natureza_despesa = models.CharField(max_length=100, null=True, blank=True)
-    tipo_loja = models.CharField(max_length=30, null=True, blank=True)
+    id_loja = models.IntegerField(null=True, blank=True)
 
 class Emprestimo(models.Model):
     id = models.BigAutoField(primary_key=True)

@@ -11,18 +11,25 @@ class DashboardDespesas():
              'despesas': [],       
         }
 
-    def execute(self, despesas, contratos):       
+    def execute(self, despesas, contratos):         
 
         '''
             TOTALIZADORES DE RECEITAS E DESPESAS
         '''
 
-        df_despesas = pd.DataFrame.from_dict(despesas)
-        df_contratos = pd.DataFrame.from_dict(contratos)
-        pd.set_option('display.expand_frame_repr', False)    
+        df_despesas = pd.DataFrame.from_dict(despesas)        
+        df_contratos = pd.DataFrame.from_dict(contratos)        
+        pd.set_option('display.expand_frame_repr', False) 
 
+        if df_despesas.empty:
+            df_despesas = pd.DataFrame(columns=['id','dt_vencimento','descricao','valor','situacao','tp_despesa','natureza_despesa','id_loja']) 
+
+        if df_contratos.empty:
+            df_contratos = pd.DataFrame(columns=['id','promotora','dt_digitacao','nr_contrato','no_cliente','cpf','convenio','operacao','banco','vl_contrato','qt_parcelas','vl_parcela','dt_pag_cliente','dt_pag_comissao','vl_comissao','porcentagem','corretor']) 
+           
         if df_despesas.empty and df_contratos.empty: 
              return self.empty_object() 
+        
         
         df_despesas["valor"] = df_despesas["valor"].astype(float) 
         df_despesas['dt_vencimento_datetime'] = pd.to_datetime(df_despesas['dt_vencimento'])
