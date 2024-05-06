@@ -3,9 +3,8 @@ from integration.helpers.utils import dictfetchall
 
 class DespesasRepository():
 
-    def dashboard_despesas(self, dt_inicio=None, dt_final=None):      
+    def get_despesas(self, dt_inicio=None, dt_final=None): 
 
-                
         SQL = f"""
             SELECT * FROM core_despesa cc 
             WHERE cc.dt_vencimento BETWEEN '{dt_inicio}' AND '{dt_final}'            
