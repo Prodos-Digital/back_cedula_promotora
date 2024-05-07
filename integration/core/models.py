@@ -40,6 +40,7 @@ class Despesa(models.Model):
     situacao = models.CharField(max_length=100, null=True, blank=True)
     tp_despesa = models.CharField(max_length=100, null=True, blank=True)
     natureza_despesa = models.CharField(max_length=100, null=True, blank=True)
+    id_loja = models.IntegerField(null=True, blank=True)
 
 class Emprestimo(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -68,3 +69,10 @@ class EmprestimoItem(models.Model):
     dt_pagamento = models.DateField(blank=True, null=True)
     tp_pagamento = models.CharField(max_length=100, null=True, blank=True)
     emprestimo = models.ForeignKey(Emprestimo, verbose_name='Emprestimo', related_name='EmprestimoItem', on_delete=models.CASCADE, help_text='Emprestimo')
+
+class Lojas(models.Model):
+    id = models.BigAutoField(primary_key=True) 
+    is_active = models.BooleanField(default=True, blank=True, null=True)
+    sg_loja = models.CharField(max_length=30, blank=True, null=True)
+    
+
