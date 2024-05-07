@@ -1,21 +1,19 @@
-
 import pandas as pd
 
-
-class DashboardDespesas():
-
-   
+class DashboardDespesas():   
 
     def empty_object(self):
         return {
              'despesas': [],       
         }
 
-    def execute(self, despesas, contratos):         
+    def execute(self, despesas, contratos, dt_inicio, dt_final):         
 
         '''
             TOTALIZADORES DE RECEITAS E DESPESAS
         '''
+
+        print('DATAS: ', dt_inicio, dt_final)
 
         df_despesas = pd.DataFrame.from_dict(despesas)        
         df_contratos = pd.DataFrame.from_dict(contratos)        
@@ -30,6 +28,11 @@ class DashboardDespesas():
         if df_despesas.empty and df_contratos.empty: 
              return self.empty_object() 
         
+        range_meses = pd.DataFrame(pd.date_range(start=dt_inicio, end=dt_final, freq="M"), columns=['month_number'])
+        range_meses['ano_mes'] = range_meses['month_number'].dt.strftime('%Y-%m')
+        range_meses = range_meses.drop(columns=['month_number'])
+
+        print(range_meses)
         
         df_despesas["valor"] = df_despesas["valor"].astype(float) 
         df_despesas['dt_vencimento_datetime'] = pd.to_datetime(df_despesas['dt_vencimento'])
@@ -91,7 +94,8 @@ class DashboardDespesas():
 
         # Concatenar os DataFrames
         df_final = pd.concat([df_merged_despesas[['ano_mes', 'vlr_total']], df_merged_contratos[['ano_mes', 'vlr_total']]])
-        df_final = df_final.sort_values(by='ano_mes')
+        df_final = df_final.sort_values(by='ano_mes')     
+        df_final = df_final.drop_duplicates(subset=['ano_mes'])   
 
         meses_ptbr = {
             1: 'Janeiro',
@@ -110,12 +114,15 @@ class DashboardDespesas():
 
         df_final['nome_mes_ano'] = pd.to_datetime(df_final['ano_mes']).dt.month.map(meses_ptbr) + ' ' + pd.to_datetime(df_final['ano_mes']).dt.year.astype(str)
 
-        print(df_final)
+        df_completo = pd.merge(range_meses, df_final, on='ano_mes', how='left')
+        df_completo['vlr_total'].fillna(0, inplace=True)
+        df_completo['nome_mes_ano'] = pd.to_datetime(df_completo['ano_mes']).dt.month.map(meses_ptbr) + ' ' + pd.to_datetime(df_completo['ano_mes']).dt.year.astype(str)
 
+        #print(df_completo)
         #breakpoint()
 
         return {
-            'despesas': df_final.to_dict('records'),
+            'despesas': df_completo.to_dict('records'),
         }
 
 if __name__ == '__main__':
@@ -123,3 +130,4 @@ if __name__ == '__main__':
     etl = DashboardDespesas()    
     #etl.execute(data) #Popular o execute com o data
     etl.execute()
+

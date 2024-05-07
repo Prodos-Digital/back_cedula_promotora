@@ -152,7 +152,7 @@ class DespesasViewSet(viewsets.ModelViewSet):
                  serializer_contratos = ContratoMS(contratos, many=True)                 
                  
                  etl = DashboardDespesas()
-                 data = etl.execute(serializer_despesas.data, serializer_contratos.data)
+                 data = etl.execute(serializer_despesas.data, serializer_contratos.data, dt_inicio, dt_final)
 
                  return Response(data=data, status=status.HTTP_200_OK)
             
@@ -165,7 +165,7 @@ class DespesasViewSet(viewsets.ModelViewSet):
                 serializer_contratos = ContratoMS(contratos, many=True)
             
                 etl = DashboardDespesas()
-                data = etl.execute(serializer_despesas.data, serializer_contratos.data)
+                data = etl.execute(serializer_despesas.data, serializer_contratos.data, dt_inicio, dt_final)
                 return Response(data=data, status=status.HTTP_200_OK)
 
             
