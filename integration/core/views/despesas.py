@@ -3,16 +3,14 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
-
 from integration.core.models import Despesa 
 from integration.core.serializer import DespesaMS
 from integration.core.models import Contrato 
 from integration.core.serializer import ContratoMS
-
 import pandas as pd
 from datetime import datetime, timedelta
-
 from integration.core.usecases.despesas import DashboardDespesas
+from integration.core.repository.despesas import DespesasRepository
 
 
 class DespesasViewSet(viewsets.ModelViewSet):
@@ -31,10 +29,13 @@ class DespesasViewSet(viewsets.ModelViewSet):
 
         try:
             #despesas = Despesa.objects.all()
-            despesas = Despesa.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento')
-            serializer = DespesaMS(despesas, many=True)
+            #despesas = Despesa.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento')
+            #serializer = DespesaMS(despesas, many=True)
 
-            df = pd.DataFrame(serializer.data)
+            depesas_repository = DespesasRepository()
+            despesas = depesas_repository.get_despesas(dt_inicio, dt_final)
+            
+            df = pd.DataFrame(despesas)            
 
             if df.empty:
                 data = {
@@ -53,7 +54,7 @@ class DespesasViewSet(viewsets.ModelViewSet):
             soma_por_situacao_dict = dict(zip(soma_por_situacao["situacao"], soma_por_situacao["valor"]))
 
             data = {
-                'data': serializer.data,
+                'data': despesas,
                 'indicadores': {
                     "pago": soma_por_situacao_dict.get("pago", 0), 
                     "pendente": soma_por_situacao_dict.get("pendente", 0), 

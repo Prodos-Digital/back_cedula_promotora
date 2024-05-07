@@ -110,7 +110,7 @@ class DashboardDespesas():
 
         df_final['nome_mes_ano'] = pd.to_datetime(df_final['ano_mes']).dt.month.map(meses_ptbr) + ' ' + pd.to_datetime(df_final['ano_mes']).dt.year.astype(str)
 
-        #print(df_final)
+        print(df_final)
 
         #breakpoint()
 

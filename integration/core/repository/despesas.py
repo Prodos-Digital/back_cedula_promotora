@@ -5,10 +5,17 @@ class DespesasRepository():
 
     def get_despesas(self, dt_inicio=None, dt_final=None): 
 
-        SQL = f"""
-            SELECT * FROM core_despesa cc 
-            WHERE cc.dt_vencimento BETWEEN '{dt_inicio}' AND '{dt_final}'            
-            ORDER BY dt_vencimento DESC;
+        SQL = f"""           
+            SELECT
+                cd.*, cl.sg_loja
+            FROM
+                core_despesa cd
+            LEFT JOIN core_lojas cl 
+            ON
+                cd.id_loja = cl.id
+            WHERE cd.dt_vencimento BETWEEN '{dt_inicio}' AND '{dt_final}' 
+            ORDER BY
+                dt_vencimento desc;
         """       
 
         #print(SQL)
