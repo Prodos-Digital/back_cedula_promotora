@@ -126,17 +126,11 @@ class DespesasViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET'], url_path='dashboard')
     def dashboard_despesas(self, request):  
-        # print('Entrou no dashboard de despesas')
+        # Endereço API: http://127.0.0.1:8005/integration/despesas/dashboard/
 
         dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
         dt_final = request.GET.get("dt_final", datetime.now())
-        loja = request.GET.get("loja", "")        
-
-        # print('dt_inicio: ', dt_inicio) 
-        # print('dt_final: ', dt_final) 
-        # print('loja: ', loja) 
-       
-        # http://127.0.0.1:8005/integration/despesas/dashboard/
+        loja = request.GET.get("loja", "")      
 
         try:
 
