@@ -29,7 +29,7 @@ class UserViewSet(viewsets.ViewSet):
 
         try:
             user = User.objects.get(id=pk)
-            data = UserSerializer(user).data
+            data = UserSerializer(user).data            
             return Response(data=data, status=status.HTTP_200_OK)
 
         except:
@@ -47,6 +47,8 @@ class UserViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['post'], url_path='change/password')
     def change_pwd(self, request):
+
+        data = request.data
 
         user = User.objects.get(id=data['user_id'])
 

@@ -37,7 +37,7 @@ class LoginViewSet(ModelViewSet, TokenObtainPairView):
         model_user = User.objects.get(email=user['email'])
         user['token'] = serializer.validated_data['access']
         user['refresh'] = serializer.validated_data['refresh']
-
+        
         return Response(user, status=status.HTTP_200_OK)
 
 
@@ -68,5 +68,7 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
             "token": str(refresh.access_token),
         }
         user.update(serializer.data)
+
+        
 
         return Response(user, status=status.HTTP_201_CREATED)
