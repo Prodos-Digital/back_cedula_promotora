@@ -31,3 +31,28 @@ class LojasMS(serializers.ModelSerializer):
     class Meta:
         model = Lojas 
         fields = '__all__'
+
+class PromotoraMS(serializers.ModelSerializer):
+    class Meta:
+        model = Promotora 
+        fields = '__all__'
+
+class ConvenioMS(serializers.ModelSerializer):
+    class Meta:
+        model = Convenio 
+        fields = '__all__'
+
+class OperacaoMS(serializers.ModelSerializer):
+    class Meta:
+        model = Operacao 
+        fields = '__all__'
+
+class BancoMS(serializers.ModelSerializer):
+    class Meta:
+        model = Banco 
+        fields = '__all__'
+
+class CorretorMS(serializers.ModelSerializer):
+    class Meta:
+        model = Corretor 
+        fields = '__all__'
