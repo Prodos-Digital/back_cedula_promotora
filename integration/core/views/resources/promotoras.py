@@ -17,6 +17,13 @@ class PromotorasViewSet(viewsets.ModelViewSet):
     def list(self, request):      
 
         try:         
+            only_actives = request.GET.get("ativas", "")
+
+            if only_actives:
+                lojas = Promotora.objects.filter(is_active=True)
+                serializer = PromotoraMS(lojas, many=True)
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            
             data = Promotora.objects.all()           
             serializer = PromotoraMS(data, many=True)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -28,7 +35,15 @@ class PromotorasViewSet(viewsets.ModelViewSet):
     def create(self, request):
 
         try:
-            serializer = PromotoraMS(data=request.data)
+
+            data = request.data           
+            has_duplicated_name = Promotora.objects.filter(name=data["name"]).first()           
+
+            if has_duplicated_name:               
+                return Response(data={"message": "Duplicado"}, status=status.HTTP_403_FORBIDDEN)
+        
+
+            serializer = PromotoraMS(data=data)
 
             if serializer.is_valid():
                 serializer.save()

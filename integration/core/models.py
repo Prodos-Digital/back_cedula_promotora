@@ -1,6 +1,5 @@
 from django.db import models
 
-
 class Cliente(models.Model):
     id = models.BigAutoField(primary_key=True)
     cpf = models.CharField(max_length=11, null=True, blank=True)
@@ -80,25 +79,45 @@ class Promotora(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
     is_active = models.BooleanField(default=True, blank=True, null=True)
 
+    class Meta:
+        managed = False
+        db_table = 'promotoras'
+
 class Convenio(models.Model):
     id = models.BigAutoField(primary_key=True) 
     name = models.CharField(max_length=50, blank=True, null=True)
     is_active = models.BooleanField(default=True, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'convenios'
 
 class Operacao(models.Model):
     id = models.BigAutoField(primary_key=True) 
     name = models.CharField(max_length=50, blank=True, null=True)
     is_active = models.BooleanField(default=True, blank=True, null=True)
 
+    class Meta:
+        managed = False
+        db_table = 'operacoes'
+
 class Banco(models.Model):
     id = models.BigAutoField(primary_key=True) 
     name = models.CharField(max_length=50, blank=True, null=True)
     is_active = models.BooleanField(default=True, blank=True, null=True)
 
+    class Meta:
+        managed = False
+        db_table = 'bancos'
+
 class Corretor(models.Model):
     id = models.BigAutoField(primary_key=True) 
     name = models.CharField(max_length=50, blank=True, null=True)
     is_active = models.BooleanField(default=True, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'corretores'
 
 # class PreContrato(models.Model):
 #     id = models.BigAutoField(primary_key=True)
@@ -119,3 +138,8 @@ class Corretor(models.Model):
 #     porcentagem = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 #     corretor = models.CharField(max_length=255, null=True, blank=True)
 #     #Adicionar os campos adicionais
+
+
+# CREATE SEQUENCE convenios_id_seq
+# START WITH 1
+# INCREMENT BY 1;
