@@ -30,3 +30,13 @@ cadastro de "PRÉ-CONTRATOS" e o relatório de pré-contratos, com a seguinte l�
 FINALIZADO
 
 - Eliminar da aplição as páginas de cadastro de empréstimos e relatório de empréstimos
+
+
+
+
+
+
+
+DEMANDAS MENOS ORGANIZADAS
+
+- Mandar usuário ao logar com sucesso para página existente

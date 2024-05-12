@@ -14,7 +14,8 @@ class PromotorasViewSet(viewsets.ModelViewSet):
         serializer = super().get_serializer_class()
         return serializer
 
-    def list(self, request):      
+    def list(self, request): 
+        print('Entrou no list')     
 
         try:         
             only_actives = request.GET.get("ativas", "")
@@ -40,8 +41,7 @@ class PromotorasViewSet(viewsets.ModelViewSet):
             has_duplicated_name = Promotora.objects.filter(name=data["name"]).first()           
 
             if has_duplicated_name:               
-                return Response(data={"message": "Duplicado"}, status=status.HTTP_403_FORBIDDEN)
-        
+                return Response(data={"message": "Nome já existente"}, status=status.HTTP_403_FORBIDDEN)        
 
             serializer = PromotoraMS(data=data)
 
@@ -60,6 +60,7 @@ class PromotorasViewSet(viewsets.ModelViewSet):
         try:
             data = Promotora.objects.get(id=pk)
             serializer = PromotoraMS(instance=data, data=request.data)
+            
 
             if serializer.is_valid():
                 serializer.save()

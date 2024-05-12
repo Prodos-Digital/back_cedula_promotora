@@ -138,8 +138,3 @@ class Corretor(models.Model):
 #     porcentagem = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 #     corretor = models.CharField(max_length=255, null=True, blank=True)
 #     #Adicionar os campos adicionais
-
-
-# CREATE SEQUENCE convenios_id_seq
-# START WITH 1
-# INCREMENT BY 1;
