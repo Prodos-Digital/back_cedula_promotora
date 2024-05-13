@@ -1,18 +1,9 @@
-- Criação de página de cadastro e edição de tipo de promotoras
-
-- Criação de página de cadastro e edição os convênios
-
-- Criação de página de cadastro e edição de operações
-
-- Criação de página de cadastro e edição de bancos
-
-- Criação de página de cadastro e edição de corretores
 
 - Criação de nova página para gestão de usuários, onde será possível criar novos usuários.
 
-- Página para cadastro de "PRÉ-CONTRATOS" que será utilizado pelos funcionários, com os campos que o Felipe apontou como obrigatórios.
-
 - Na página cadastro de clientes adicionar o campo convênio, e quando selecionado a opção INSS carregar no campo todas as espécies do INSS
+
+- Página para cadastro de "PRÉ-CONTRATOS" que será utilizado pelos funcionários, com os campos que o Felipe apontou como obrigatórios.
 
 - Página de relatório para os "PRÉ-CONTRATOS" com filtros e sem os totalizadores de valores e com a possibilidade de edição de pré-contratos e que o Felipe consiga enxergar todos os contratos,
 porém os funcionários só devem visualizar os pré-contratos que criaram. Essa página de contrato deve ter a função de aprovar pré-contrato, sendo 
@@ -31,10 +22,15 @@ FINALIZADO
 
 - Eliminar da aplição as páginas de cadastro de empréstimos e relatório de empréstimos
 
+- Criação de página de cadastro e edição de tipo de promotoras
 
+- Criação de página de cadastro e edição os convênios
 
+- Criação de página de cadastro e edição de operações
 
+- Criação de página de cadastro e edição de bancos
 
+- Criação de página de cadastro e edição de corretores
 
 
 DEMANDAS MENOS ORGANIZADAS
