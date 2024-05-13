@@ -45,6 +45,7 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
     """
     Classe utilizada para receber requisições de registro dos usuários.
     """
+    
 
     serializer_class = RegistrationSerializer
     permission_classes = (AllowAny,)
@@ -54,9 +55,14 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
 
         data = request.data
 
+        print(data)
+
         if User.objects.filter(email=data['email']).exists():
             return Response(status=status.HTTP_403_FORBIDDEN)
 
+
+        data["password"] = '12345678'
+        
         serializer = self.get_serializer(data=data)
 
         serializer.is_valid(raise_exception=True)
