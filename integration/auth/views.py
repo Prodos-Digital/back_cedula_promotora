@@ -8,9 +8,9 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework_simplejwt.settings import api_settings
-
 from integration.auth.serializers import LoginSerializer, RegistrationSerializer
 from integration.users.models import User
+from rolepermissions.roles import assign_role
 
 User = get_user_model()
 
@@ -55,11 +55,8 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
 
         data = request.data
 
-        print(data)
-
         if User.objects.filter(email=data['email']).exists():
             return Response(status=status.HTTP_403_FORBIDDEN)
-
 
         data["password"] = '12345678'
         
@@ -69,12 +66,13 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
         user = serializer.save()
         refresh = RefreshToken.for_user(user)
 
+        assign_role(user, 'app_permissions')        
         user = {
             "refresh": str(refresh),
             "token": str(refresh.access_token),
         }
         user.update(serializer.data)
+        print(data)
 
-        
 
         return Response(user, status=status.HTTP_201_CREATED)
