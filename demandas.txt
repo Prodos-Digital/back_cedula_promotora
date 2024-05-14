@@ -33,6 +33,8 @@ FINALIZADO
 - Criação de página de cadastro e edição de corretores
 
 
-DEMANDAS MENOS ORGANIZADAS
+DEMANDAS MENORES ORGANIZADAS
 
 - Mandar usuário ao logar com sucesso para página existente
+
+- Alterar arquivo layout para consertar margem à direita ao abrir filtros
