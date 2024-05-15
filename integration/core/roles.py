@@ -29,5 +29,6 @@ class AppPermissions(AbstractUserRole):
         'app_relatorio_clientes': False,
         'app_relatorio_contratos': False,
         'app_relatorio_despesas': False,
+        'app_relatorio_pre_contratos': False,
     }
 

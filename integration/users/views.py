@@ -20,6 +20,7 @@ class UserViewSet(viewsets.ViewSet):
         print('Entrou no list de usuários')
 
         try:
+        
             users = User.objects.all()
             data = UserSerializer(users, many=True).data
             return Response(data=data, status=status.HTTP_200_OK)

@@ -13,11 +13,10 @@ from integration.users.models import User
 from rolepermissions.roles import assign_role, get_user_roles
 from rolepermissions.permissions import grant_permission, revoke_permission
 from rest_framework.decorators import action
-
+from django.db import transaction
 from integration.users.serializers import UserSerializer
 
 User = get_user_model()
-
 
 class LoginViewSet(ModelViewSet, TokenObtainPairView):
     """
@@ -93,35 +92,31 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
     def change_permissions(self, request):      
 
         data = request.data
+        user_id = data.get('user_id')
+        permissions = data.get('permissions')
+        is_active = data.get('is_active')
 
-        print('data',data)
-        # user_id = data.get('user_id')
-        # permissions = data.get('permissions')
+        if not data:
+             return Response({'success': False, 'message': 'User ID and permissions are required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # if not user_id or not permissions:
-        #     return Response({'success': False, 'message': 'User ID and permissions are required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            with transaction.atomic():
+                user = User.objects.get(id=user_id)
 
-        try:           
-            pass
-        #     user = User.objects.get(id=user_id)          
-        #     user_serializer = UserSerializer(user)           
+                if is_active is not None:
+                    user.is_active = is_active
+                    user.save()                  
 
-        #     if user:
-        #         # Clear existing roles if needed
-        #         #clear_roles(user)
+                user_serializer = UserSerializer(user)
 
-        #         # Reassign roles
-        #         assign_role(user, 'app_permissions')
-        #         assign_role(user, 'menu_permissions')
-
-        #         # Update permissions
-        #         for perm, value in permissions.items():
-        #             if value:
-        #                 grant_permission(user, perm)
-        #             else:
-        #                 revoke_permission(user, perm)
-          
-        #     return Response(user_serializer.data, status=status.HTTP_200_OK)
+                if user:
+                    for perm, value in permissions.items():
+                        if value:
+                            grant_permission(user, perm)
+                        else:
+                            revoke_permission(user, perm)
+                
+                return Response(user_serializer.data, status=status.HTTP_200_OK)
 
         except Exception as err:
             print("Error: ", err)
