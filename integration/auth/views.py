@@ -48,8 +48,7 @@ class LoginViewSet(ModelViewSet, TokenObtainPairView):
 class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
     """
     Classe utilizada para receber requisições de registro dos usuários.
-    """
-    
+    """   
 
     serializer_class = RegistrationSerializer
     permission_classes = (AllowAny,)
@@ -91,43 +90,38 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
 
 
     @action(detail=False, methods=['post'], url_path='update-perms')
-    def change_permissions(self, request):
-
-        # {
-        #     "user_id": 3,
-        #     "permissions": {
-        #         "menu_acessos": true,
-        #         "app_usuarios": false
-        #     }
-        # }
+    def change_permissions(self, request):      
 
         data = request.data
-        user_id = data.get('user_id')
-        permissions = data.get('permissions')
 
-        if not user_id or not permissions:
-            return Response({'success': False, 'message': 'User ID and permissions are required'}, status=status.HTTP_400_BAD_REQUEST)
+        print('data',data)
+        # user_id = data.get('user_id')
+        # permissions = data.get('permissions')
+
+        # if not user_id or not permissions:
+        #     return Response({'success': False, 'message': 'User ID and permissions are required'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:           
-            user = User.objects.get(id=user_id)          
-            user_serializer = UserSerializer(user)           
+            pass
+        #     user = User.objects.get(id=user_id)          
+        #     user_serializer = UserSerializer(user)           
 
-            if user:
-                # Clear existing roles if needed
-                #clear_roles(user)
+        #     if user:
+        #         # Clear existing roles if needed
+        #         #clear_roles(user)
 
-                # Reassign roles
-                assign_role(user, 'app_permissions')
-                assign_role(user, 'menu_permissions')
+        #         # Reassign roles
+        #         assign_role(user, 'app_permissions')
+        #         assign_role(user, 'menu_permissions')
 
-                # Update permissions
-                for perm, value in permissions.items():
-                    if value:
-                        grant_permission(user, perm)
-                    else:
-                        revoke_permission(user, perm)
+        #         # Update permissions
+        #         for perm, value in permissions.items():
+        #             if value:
+        #                 grant_permission(user, perm)
+        #             else:
+        #                 revoke_permission(user, perm)
           
-            return Response(user_serializer.data, status=status.HTTP_200_OK)
+        #     return Response(user_serializer.data, status=status.HTTP_200_OK)
 
         except Exception as err:
             print("Error: ", err)
