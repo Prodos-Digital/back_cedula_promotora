@@ -73,7 +73,8 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
             # }
         
             assign_role(user, 'app_permissions')
-            assign_role(user, 'menu_permissions')            
+            assign_role(user, 'menu_permissions')     
+                   
             roles = get_user_roles(user)
             permissions = {perm: False for role in roles for perm in role.available_permissions}
          
@@ -92,9 +93,14 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
     def change_permissions(self, request):      
 
         data = request.data
+
+        #print(data)
         user_id = data.get('user_id')
         permissions = data.get('permissions')
         is_active = data.get('is_active')
+
+        
+       
 
         if not data:
              return Response({'success': False, 'message': 'User ID and permissions are required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -102,6 +108,11 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
         try:
             with transaction.atomic():
                 user = User.objects.get(id=user_id)
+
+                assign_role(user, 'app_permissions')
+                assign_role(user, 'menu_permissions') 
+
+                print(get_user_roles(user))
 
                 if is_active is not None:
                     user.is_active = is_active
@@ -111,6 +122,7 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
 
                 if user:
                     for perm, value in permissions.items():
+                        print(f'perm: {perm} - value: {value}')
                         if value:
                             grant_permission(user, perm)
                         else:

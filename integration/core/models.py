@@ -119,22 +119,26 @@ class Corretor(models.Model):
         managed = False
         db_table = 'corretores'
 
-# class PreContrato(models.Model):
-#     id = models.BigAutoField(primary_key=True)
-#     promotora = models.CharField(max_length=255, null=True, blank=True)
-#     dt_digitacao = models.DateField(null=True, blank=True)
-#     nr_contrato = models.CharField(max_length=255, null=True, blank=True)
-#     no_cliente = models.CharField(max_length=255, null=True, blank=True)
-#     cpf = models.CharField(max_length=255, null=True, blank=True)
-#     convenio = models.CharField(max_length=255, null=True, blank=True)
-#     operacao = models.CharField(max_length=255, null=True, blank=True)
-#     banco = models.CharField(max_length=255, null=True, blank=True)
-#     vl_contrato = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-#     qt_parcelas = models.CharField(max_length=255, null=True, blank=True)
-#     vl_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-#     dt_pag_cliente = models.DateField(null=True, blank=True)
-#     dt_pag_comissao = models.CharField(max_length=255, null=True, blank=True)
-#     vl_comissao = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-#     porcentagem = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-#     corretor = models.CharField(max_length=255, null=True, blank=True)
-#     #Adicionar os campos adicionais
+class PreContrato(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    promotora = models.CharField(max_length=255, null=True, blank=True)
+    dt_digitacao = models.DateField(null=True, blank=True)
+    nr_contrato = models.CharField(max_length=255, null=True, blank=True)
+    no_cliente = models.CharField(max_length=255, null=True, blank=True)
+    cpf = models.CharField(max_length=255, null=True, blank=True)
+    convenio = models.CharField(max_length=255, null=True, blank=True)
+    operacao = models.CharField(max_length=255, null=True, blank=True)
+    banco = models.CharField(max_length=255, null=True, blank=True)
+    vl_contrato = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    qt_parcelas = models.CharField(max_length=255, null=True, blank=True)
+    vl_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    dt_pag_cliente = models.DateField(null=True, blank=True)
+    dt_pag_comissao = models.CharField(max_length=255, null=True, blank=True)
+    vl_comissao = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    porcentagem = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    corretor = models.CharField(max_length=255, null=True, blank=True)
+    #Adicionar os campos adicionais
+
+    class Meta:
+        managed = False
+        db_table = 'pre_contratos'
