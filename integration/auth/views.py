@@ -93,14 +93,10 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
     def change_permissions(self, request):      
 
         data = request.data
-
-        #print(data)
+       
         user_id = data.get('user_id')
         permissions = data.get('permissions')
-        is_active = data.get('is_active')
-
-        
-       
+        is_active = data.get('is_active')       
 
         if not data:
              return Response({'success': False, 'message': 'User ID and permissions are required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -130,6 +126,27 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
                 
                 return Response(user_serializer.data, status=status.HTTP_200_OK)
 
+        except Exception as err:
+            print("Error: ", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=False, methods=['post'], url_path='change-password')
+    def change_password(self, request):    
+
+        data = request.data
+        # print(data)
+        user_id = data.get('user_id')    
+
+        try:
+            user = User.objects.get(id=user_id)                  
+            user.set_password(data["password"])
+            user.save()
+            
+            serializer = UserSerializer(user)  
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response(data={'success': False, 'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as err:
             print("Error: ", err)
             return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)

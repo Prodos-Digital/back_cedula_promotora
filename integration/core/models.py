@@ -128,16 +128,23 @@ class PreContrato(models.Model):
     cpf = models.CharField(max_length=255, null=True, blank=True)
     convenio = models.CharField(max_length=255, null=True, blank=True)
     operacao = models.CharField(max_length=255, null=True, blank=True)
-    banco = models.CharField(max_length=255, null=True, blank=True)
-    vl_contrato = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    banco = models.CharField(max_length=255, null=True, blank=True)    
+    vl_contrato = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)    
     qt_parcelas = models.CharField(max_length=255, null=True, blank=True)
     vl_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     dt_pag_cliente = models.DateField(null=True, blank=True)
-    dt_pag_comissao = models.CharField(max_length=255, null=True, blank=True)
-    vl_comissao = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    porcentagem = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     corretor = models.CharField(max_length=255, null=True, blank=True)
-    #Adicionar os campos adicionais
+
+    #Novos campos que nao tem na Contrato
+    # tabela   
+    # percentual    
+    # documentacao salva (sim ou não)   
+    # contrato (digital ou fisico),   
+    # Comissão (Paga, aguardando pagamento, aguardando fisco, análise financeira)   Somente para superadmin (Felipe)
+    # Campos para verificar se são necessários
+    # dt_pag_comissao = models.CharField(max_length=255, null=True, blank=True)
+    # vl_comissao = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    # porcentagem = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     class Meta:
         managed = False
