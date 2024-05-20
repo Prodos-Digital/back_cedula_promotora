@@ -120,27 +120,30 @@ class Corretor(models.Model):
         db_table = 'corretores'
 
 class PreContrato(models.Model):
-    id = models.BigAutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)    
     promotora = models.CharField(max_length=255, null=True, blank=True)
     dt_digitacao = models.DateField(null=True, blank=True)
-    nr_contrato = models.CharField(max_length=255, null=True, blank=True)
+    nr_contrato = models.CharField(max_length=60, null=True, blank=True)
     no_cliente = models.CharField(max_length=255, null=True, blank=True)
-    cpf = models.CharField(max_length=255, null=True, blank=True)
-    convenio = models.CharField(max_length=255, null=True, blank=True)
-    operacao = models.CharField(max_length=255, null=True, blank=True)
-    banco = models.CharField(max_length=255, null=True, blank=True)    
+    cpf = models.CharField(max_length=20, null=True, blank=True)
+    convenio = models.CharField(max_length=100, null=True, blank=True)
+    operacao = models.CharField(max_length=100, null=True, blank=True)
+    banco = models.CharField(max_length=100, null=True, blank=True)    
     vl_contrato = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)    
-    qt_parcelas = models.CharField(max_length=255, null=True, blank=True)
+    qt_parcelas = models.IntegerField(null=True, blank=True) 
     vl_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     dt_pag_cliente = models.DateField(null=True, blank=True)
-    corretor = models.CharField(max_length=255, null=True, blank=True)
-
-    #Novos campos que nao tem na Contrato
-    # tabela   
-    # percentual    
-    # documentacao salva (sim ou não)   
-    # contrato (digital ou fisico),   
-    # Comissão (Paga, aguardando pagamento, aguardando fisco, análise financeira)   Somente para superadmin (Felipe)
+    porcentagem = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    corretor = models.CharField(max_length=100, null=True, blank=True)
+    tabela = models.CharField(max_length=60, null=True, blank=True)
+    tipo_contrato = models.CharField(max_length=20, null=True, blank=True) # (digital ou fisico)
+    status_comissao = models.CharField(max_length=30, null=True, blank=True) #(Paga, aguardando pagamento, aguardando fisco, análise financeira)   Somente para superadmin (Felipe)    
+    iletrado = models.BooleanField(blank=True, null=True) # (sim ou não)
+    documento_salvo = models.BooleanField(blank=True, null=True) # (sim ou não)
+    user_id_created = models.IntegerField(null=True, blank=True)     
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     # Campos para verificar se são necessários
     # dt_pag_comissao = models.CharField(max_length=255, null=True, blank=True)
     # vl_comissao = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)

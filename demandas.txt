@@ -35,6 +35,8 @@ FINALIZADO
 
 DEMANDAS MENORES ORGANIZADAS
 
+- Adicionar o campo Iletrado (.  ) sim.  (.  ) nao para especificar se o cliente é ou não analfabeto no cadastro de pré contratos
+
 - Mandar usuário ao logar com sucesso para página existente
 
 - Alterar arquivo layout para consertar margem à direita ao abrir filtros
