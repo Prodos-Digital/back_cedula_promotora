@@ -16,7 +16,14 @@ class ConveniosViewSet(viewsets.ModelViewSet):
 
     def list(self, request):      
 
-        try:         
+        try:
+            only_actives = request.GET.get("ativas", "")
+
+            if only_actives:
+                data = Convenio.objects.filter(is_active=True)
+                serializer = ConvenioMS(data, many=True)
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+
             data = Convenio.objects.all()           
             serializer = ConvenioMS(data, many=True)
             return Response(data=serializer.data, status=status.HTTP_200_OK)

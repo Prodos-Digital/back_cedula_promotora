@@ -14,9 +14,16 @@ class OperacoesViewSet(viewsets.ModelViewSet):
         serializer = super().get_serializer_class()
         return serializer
 
-    def list(self, request):      
+    def list(self, request):   
 
-        try:         
+        try:
+            only_actives = request.GET.get("ativas", "")
+
+            if only_actives:
+                data = Operacao.objects.filter(is_active=True)
+                serializer = OperacaoMS(data, many=True)
+                return Response(data=serializer.data, status=status.HTTP_200_OK)   
+                  
             data = Operacao.objects.all()           
             serializer = OperacaoMS(data, many=True)
             return Response(data=serializer.data, status=status.HTTP_200_OK)

@@ -16,7 +16,14 @@ class CorretoresViewSet(viewsets.ModelViewSet):
 
     def list(self, request):      
 
-        try:         
+        try:   
+            only_actives = request.GET.get("ativas", "")
+
+            if only_actives:
+                data = Corretor.objects.filter(is_active=True)
+                serializer = CorretorMS(data, many=True)
+                return Response(data=serializer.data, status=status.HTTP_200_OK)  
+                 
             data = Corretor.objects.all()           
             serializer = CorretorMS(data, many=True)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
