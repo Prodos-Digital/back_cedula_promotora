@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from integration.core.models import PreContrato
-from integration.core.serializer import PreContratoMS
+from integration.users.models import User
+from integration.core.serializer import PreContratoMS, PreContratoRelatorioMS
 import pandas as pd
 from datetime import datetime, timedelta
 
@@ -18,16 +19,40 @@ class PreContratosViewSet(viewsets.ModelViewSet):
         serializer = super().get_serializer_class()
         return serializer
 
-    def list(self, request):       
+    def list(self, request):    
 
         dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
         dt_final = request.GET.get("dt_final", datetime.now())
+        user_id = request.GET.get("user_id", "")
 
-        #TODO listar pelo id_user
+        user = User.objects.get(id=user_id)
 
-        try:           
-            pre_contratos = PreContrato.objects.filter(dt_pag_cliente__range=[dt_inicio, dt_final]).order_by('-dt_digitacao')
-            serializer = PreContratoMS(pre_contratos, many=True)
+        if user.is_superuser:
+            FILTER_USER_ID = ""
+        else:
+            FILTER_USER_ID = f"""AND pc.user_id_created = {user_id}""" if user_id else ""
+
+        try:        
+            QUERY = f"""
+                        SELECT pc.*, 
+                            b.name AS "nome_banco", 
+                            p.name AS "nome_promotora", 
+                            c.name AS "nome_convenio",
+                            co.name AS "nome_corretor",
+                            o.name AS "nome_operacao"
+                        FROM pre_contratos pc 
+                        LEFT JOIN bancos b ON pc.banco::INTEGER = b.id
+                        LEFT JOIN promotoras p ON pc.promotora::INTEGER = p.id
+                        LEFT JOIN convenios c ON pc.convenio::INTEGER = c.id
+                        LEFT JOIN corretores co ON pc.corretor ::INTEGER = co.id
+                        LEFT JOIN operacoes o ON pc.operacao::INTEGER = o.id
+                        WHERE pc.dt_pag_cliente BETWEEN '{dt_inicio}' AND '{dt_final}'
+                        {FILTER_USER_ID}
+                        ORDER BY pc.dt_pag_cliente  DESC;
+                    """               
+            
+            pre_contratos = PreContrato.objects.raw(QUERY)              
+            serializer = PreContratoRelatorioMS(pre_contratos, many=True)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 

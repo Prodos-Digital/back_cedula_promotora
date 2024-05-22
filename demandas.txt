@@ -44,3 +44,5 @@ DEMANDAS MENORES ORGANIZADAS
 - Funcao do usuário trocar a própria senha
 
 - Configurar o middleware para bloquear rotas nao autorizadas
+
+- adicionar os filtros de data na página relatório de pré contratos

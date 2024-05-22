@@ -57,7 +57,19 @@ class CorretorMS(serializers.ModelSerializer):
         model = Corretor 
         fields = '__all__'
 
-class PreContratoMS(serializers.ModelSerializer):
+class PreContratoMS(serializers.ModelSerializer):   
+
+    class Meta:
+        model = PreContrato 
+        fields = '__all__'
+
+class PreContratoRelatorioMS(serializers.ModelSerializer):
+    nome_banco = serializers.CharField()
+    nome_promotora = serializers.CharField()
+    nome_convenio = serializers.CharField()
+    nome_corretor = serializers.CharField()
+    nome_operacao = serializers.CharField()
+
     class Meta:
         model = PreContrato 
         fields = '__all__'
