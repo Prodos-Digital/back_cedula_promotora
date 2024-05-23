@@ -60,10 +60,10 @@ class PreContratosViewSet(viewsets.ModelViewSet):
             print("Error: ", error)
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def retrieve(self, request, pk):
+    def retrieve(self, request, pk):       
 
         try:
-            pre_contratos = PreContrato.objects.get(nr_PreContrato=pk)
+            pre_contratos = PreContrato.objects.get(id=pk)
             serializer = PreContratoMS(pre_contratos)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)

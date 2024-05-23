@@ -15,7 +15,6 @@ class PromotorasViewSet(viewsets.ModelViewSet):
         return serializer
 
     def list(self, request): 
-        print('Entrou no list')     
 
         try:         
             only_actives = request.GET.get("ativas", "")

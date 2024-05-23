@@ -17,8 +17,6 @@ class UserViewSet(viewsets.ViewSet):
 
     def list(self, request):
 
-        print('Entrou no list de usuários')
-
         try:
         
             users = User.objects.all()
