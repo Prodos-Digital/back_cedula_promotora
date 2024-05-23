@@ -3,10 +3,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from integration.core.models import PreContrato
+from integration.core.models import PreContrato, Contrato
 from integration.users.models import User
-from integration.core.serializer import PreContratoMS, PreContratoRelatorioMS
-import pandas as pd
+from integration.core.serializer import PreContratoMS, PreContratoRelatorioMS, ContratoMS
 from datetime import datetime, timedelta
 
 
@@ -50,7 +49,7 @@ class PreContratosViewSet(viewsets.ModelViewSet):
                         {FILTER_USER_ID}
                         ORDER BY pc.dt_pag_cliente  DESC;
                     """               
-            
+            print(QUERY)
             pre_contratos = PreContrato.objects.raw(QUERY)              
             serializer = PreContratoRelatorioMS(pre_contratos, many=True)
 
@@ -87,7 +86,7 @@ class PreContratosViewSet(viewsets.ModelViewSet):
             print("Error: ", error)
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def update(self, request, pk):
+    def update(self, request, pk):       
 
         try:
             pre_contratos = PreContrato.objects.get(id=pk)
@@ -117,4 +116,26 @@ class PreContratosViewSet(viewsets.ModelViewSet):
         except Exception as error:
             print("Error: ", error)
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+
+    @action(detail=False, methods=['post'], url_path="send-to-contrato")
+    def send_to_contrato(self, request): 
+
+        data = request.data
+        print('data: ', data)       
+
+        try:    
+            print(1)
+            serializer = ContratoMS(data=data)
+            print(2)
+            if serializer.is_valid():
+                print(3)
+                #serializer.save()
+                print(4)
+                return Response(data=serializer.data, status=status.HTTP_201_CREATED)       
+
+            return Response(data='', status=status.HTTP_200_OK)
+
+        except Exception as err:
+            print("ERROR>>>", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)  

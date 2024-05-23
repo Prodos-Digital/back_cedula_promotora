@@ -143,6 +143,7 @@ class PreContrato(models.Model):
     user_id_created = models.IntegerField(null=True, blank=True)     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    contrato_criado = models.BooleanField(blank=True, null=True, default=False) 
     
     # Campos para verificar se são necessários
     # dt_pag_comissao = models.CharField(max_length=255, null=True, blank=True)
