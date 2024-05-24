@@ -7,7 +7,7 @@ from integration.core.models import PreContrato, Contrato
 from integration.users.models import User
 from integration.core.serializer import PreContratoMS, PreContratoRelatorioMS, ContratoMS
 from datetime import datetime, timedelta
-
+from django.db import transaction
 
 class PreContratosViewSet(viewsets.ModelViewSet):
     queryset = PreContrato.objects.all()
@@ -121,20 +121,24 @@ class PreContratosViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'], url_path="send-to-contrato")
     def send_to_contrato(self, request): 
 
-        data = request.data
-        print('data: ', data)       
+        data = request.data       
 
         try:    
-            print(1)
-            serializer = ContratoMS(data=data)
-            print(2)
-            if serializer.is_valid():
-                print(3)
-                #serializer.save()
-                print(4)
-                return Response(data=serializer.data, status=status.HTTP_201_CREATED)       
+            with transaction.atomic():
+                pre_contrato = PreContrato.objects.filter(id=request.data['id']).first()
 
-            return Response(data='', status=status.HTTP_200_OK)
+                if pre_contrato:
+                    pre_contrato.contrato_criado = True
+                    pre_contrato.save()
+
+                serializer = ContratoMS(data=data)
+            
+                if serializer.is_valid():
+                    serializer.save() 
+                    return Response(data=serializer.data, status=status.HTTP_201_CREATED)       
+                else:
+                    print("Serializer is not valid. Errors:", serializer.errors)
+                    return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as err:
             print("ERROR>>>", err)
