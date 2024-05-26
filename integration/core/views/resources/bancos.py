@@ -20,7 +20,7 @@ class BancosViewSet(viewsets.ModelViewSet):
             only_actives = request.GET.get("ativas", "")
 
             if only_actives:
-                data = Banco.objects.filter(is_active=True)
+                data = Banco.objects.filter(is_active=True).order_by('name')
                 serializer = BancoMS(data, many=True)
                 return Response(data=serializer.data, status=status.HTTP_200_OK)    
                    

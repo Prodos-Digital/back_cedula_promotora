@@ -45,7 +45,7 @@ class PreContratosViewSet(viewsets.ModelViewSet):
                         LEFT JOIN convenios c ON pc.convenio::INTEGER = c.id
                         LEFT JOIN corretores co ON pc.corretor ::INTEGER = co.id
                         LEFT JOIN operacoes o ON pc.operacao::INTEGER = o.id
-                        WHERE pc.dt_pag_cliente BETWEEN '{dt_inicio}' AND '{dt_final}'
+                        WHERE TO_CHAR(pc.created_at, 'YYYY-MM-DD') BETWEEN '{dt_inicio}' AND '{dt_final}'
                         {FILTER_USER_ID}
                         ORDER BY pc.dt_pag_cliente  DESC;
                     """               
@@ -59,11 +59,17 @@ class PreContratosViewSet(viewsets.ModelViewSet):
             print("Error: ", error)
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def retrieve(self, request, pk):       
-
+    def retrieve(self, request, pk):          
+       
         try:
-            pre_contratos = PreContrato.objects.get(id=pk)
-            serializer = PreContratoMS(pre_contratos)
+            user_id = request.GET.get("user_id", "")
+            pre_contrato = PreContrato.objects.get(id=pk)
+
+            if user_id and pre_contrato:
+                if int(pre_contrato.user_id_created) != int(user_id):
+                    return Response(data=serializer.data, status=status.HTTP_401_UNAUTHORIZED)
+
+            serializer = PreContratoMS(pre_contrato)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 

@@ -20,7 +20,7 @@ class PromotorasViewSet(viewsets.ModelViewSet):
             only_actives = request.GET.get("ativas", "")
 
             if only_actives:
-                lojas = Promotora.objects.filter(is_active=True)
+                lojas = Promotora.objects.filter(is_active=True).order_by('name')
                 serializer = PromotoraMS(lojas, many=True)
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
             

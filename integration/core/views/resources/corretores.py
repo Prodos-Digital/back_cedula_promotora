@@ -20,7 +20,7 @@ class CorretoresViewSet(viewsets.ModelViewSet):
             only_actives = request.GET.get("ativas", "")
 
             if only_actives:
-                data = Corretor.objects.filter(is_active=True)
+                data = Corretor.objects.filter(is_active=True).order_by('name')
                 serializer = CorretorMS(data, many=True)
                 return Response(data=serializer.data, status=status.HTTP_200_OK)  
                  

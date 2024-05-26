@@ -1,48 +1,13 @@
 
-- Possibilitar que somente o Felipe tenha acesso a todas as páginas da aplicação
-
-- Página para cadastro de "PRÉ-CONTRATOS" que será utilizado pelos funcionários, com os campos que o Felipe apontou como obrigatórios.
 
 - Na página cadastro de clientes adicionar o campo convênio, e quando selecionado a opção INSS carregar no campo todas as espécies do INSS
 
-- Página de relatório para os "PRÉ-CONTRATOS" com filtros e sem os totalizadores de valores e com a possibilidade de edição de pré-contratos e que o Felipe consiga enxergar todos os contratos,
-porém os funcionários só devem visualizar os pré-contratos que criaram. Essa página de contrato deve ter a função de aprovar pré-contrato, sendo 
-que ao realizar essa operação, o pré-contrato deve transferir os dados para a página relatório de contratos.
-
-- Configurar acesso para que os funcionários só consigam visualizar e acessar duas páginas da aplicação, o 
-cadastro de "PRÉ-CONTRATOS" e o relatório de pré-contratos, com a seguinte lógica: só será possível enxergar os 
-"PRÉ-CONTRATOS" que o próprio funcionário criou, assim sendo impossível visualizar ou editar o pré contrato de outro funcionário
-
-- Na página de edição dos pré-contratos, incluir opção somente para o administrador Felipe, que será um campo para selecionar uma das seguintes opções: Comissão (paga, aguardando pagamento, pendente de físico, análise financeira)
-
-
-FINALIZADO
-
-- Eliminar da aplição as páginas de cadastro de empréstimos e relatório de empréstimos
-
-- Criação de página de cadastro e edição de tipo de promotoras
-
-- Criação de página de cadastro e edição os convênios
-
-- Criação de página de cadastro e edição de operações
-
-- Criação de página de cadastro e edição de bancos
-
-- Criação de página de cadastro e edição de corretores
-
-- Criação de nova página para gestão de usuários, onde será possível criar novos usuários.
-
-
 DEMANDAS MENORES ORGANIZADAS
-
-- Adicionar o campo Iletrado (.  ) sim.  (.  ) nao para especificar se o cliente é ou não analfabeto no cadastro de pré contratos
-
-- Mandar usuário ao logar com sucesso para página existente
-
-- Alterar arquivo layout para consertar margem à direita ao abrir filtros
-
-- Funcao do usuário trocar a própria senha
 
 - Configurar o middleware para bloquear rotas nao autorizadas
 
-- adicionar os filtros de data na página relatório de pré contratos
+- Mandar usuário ao logar com sucesso para página existente
+
+- Achar solução para trocar de rota para a mesma na edição de pré contratos
+
+- Alterar arquivo layout para consertar margem à direita ao abrir filtros
