@@ -4,7 +4,7 @@
 
 DEMANDAS MENORES ORGANIZADAS
 
-- Configurar o middleware para bloquear rotas nao autorizadas
+- Configurar o middleware para bloquear rotas nao autorizadas e tratar a rota "/"
 
 - Mandar usuário ao logar com sucesso para página existente
 
