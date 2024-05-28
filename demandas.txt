@@ -1,12 +1,6 @@
 
 
-- Na página cadastro de clientes adicionar o campo convênio, e quando selecionado a opção INSS carregar no campo todas as espécies do INSS
-
 DEMANDAS MENORES ORGANIZADAS
-
-- Configurar o middleware para bloquear rotas nao autorizadas e tratar a rota "/"
-
-- Mandar usuário ao logar com sucesso para página existente
 
 - Achar solução para trocar de rota para a mesma na edição de pré contratos
 

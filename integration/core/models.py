@@ -11,6 +11,11 @@ class Cliente(models.Model):
     telefone2 = models.CharField(max_length=20, null=True, blank=True)
     telefone3 = models.CharField(max_length=20, null=True, blank=True)
     observacoes = models.TextField(null=True, blank=True)
+    convenio = models.CharField(max_length=100, null=True, blank=True)
+
+    class Meta:
+        managed = False
+        db_table = 'core_cliente'
 
 class Contrato(models.Model):
     id = models.BigAutoField(primary_key=True)
