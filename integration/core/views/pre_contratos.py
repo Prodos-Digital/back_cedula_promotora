@@ -49,7 +49,7 @@ class PreContratosViewSet(viewsets.ModelViewSet):
                         {FILTER_USER_ID}
                         ORDER BY pc.dt_pag_cliente  DESC;
                     """               
-            print(QUERY)
+            
             pre_contratos = PreContrato.objects.raw(QUERY)              
             serializer = PreContratoRelatorioMS(pre_contratos, many=True)
 

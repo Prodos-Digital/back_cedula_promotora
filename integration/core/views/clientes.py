@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from integration.core.models import Cliente
-from integration.core.serializer import ClienteMS
+from integration.core.serializer import ClienteMS, ClienteRelatorioMS
 from integration.core.usecases.clientes import DashboardClientes
 
 
@@ -22,8 +22,16 @@ class ClientesViewSet(viewsets.ModelViewSet):
     def list(self, request):
 
         try:
-            clientes = Cliente.objects.all()
-            serializer = ClienteMS(clientes, many=True)
+
+            QUERY = f"""
+                        SELECT cc.*, c.name AS "nome_convenio" FROM core_cliente cc 
+                        LEFT JOIN convenios c 
+                        ON cc.convenio::INTEGER = c.id
+                        ORDER BY cc.id DESC ;
+                    """               
+            
+            clientes = Cliente.objects.raw(QUERY)             
+            serializer = ClienteRelatorioMS(clientes, many=True)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 

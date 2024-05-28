@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from integration.core.models import Contrato
-from integration.core.serializer import ContratoMS
+from integration.core.serializer import ContratoMS, ContratoRelatorioMS
 import pandas as pd
 from datetime import datetime, timedelta
 from integration.core.usecases.contratos import DashboardContratos
@@ -25,9 +25,39 @@ class ContratosViewSet(viewsets.ModelViewSet):
         dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
         dt_final = request.GET.get("dt_final", datetime.now())
 
-        try:           
-            contratos = Contrato.objects.filter(dt_pag_cliente__range=[dt_inicio, dt_final]).order_by('-dt_digitacao')
-            serializer = ContratoMS(contratos, many=True)
+        try:       
+
+            QUERY = f"""
+                        SELECT
+                            cc.*,
+                            b.name AS "nome_banco",
+                            p.name AS "nome_promotora",
+                            c.name AS "nome_convenio",
+                            co.name AS "nome_corretor",
+                            o.name AS "nome_operacao"
+                        FROM
+                            core_contrato cc
+                        LEFT JOIN bancos b ON
+                            cc.banco::VARCHAR = b.id::VARCHAR
+                        LEFT JOIN promotoras p ON
+                            cc.promotora::VARCHAR = p.id::VARCHAR
+                        LEFT JOIN convenios c ON
+                            cc.convenio::VARCHAR = c.id::VARCHAR
+                        LEFT JOIN corretores co ON
+                            cc.corretor ::VARCHAR = co.id::VARCHAR
+                        LEFT JOIN operacoes o ON
+                            cc.operacao::VARCHAR = o.id::VARCHAR
+                        WHERE
+                            TO_CHAR(
+                                cc.dt_pag_cliente,
+                                'YYYY-MM-DD'
+                            ) BETWEEN '{dt_inicio}' AND '{dt_final}'
+                                            
+                        ORDER BY
+                            cc.dt_digitacao DESC;
+                    """               
+            contratos = Contrato.objects.raw(QUERY)              
+            serializer = ContratoRelatorioMS(contratos, many=True)
 
             df = pd.DataFrame(serializer.data)
 

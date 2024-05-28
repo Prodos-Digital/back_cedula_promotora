@@ -7,7 +7,25 @@ class ClienteMS(serializers.ModelSerializer):
         model = Cliente 
         fields = '__all__'
 
+class ClienteRelatorioMS(serializers.ModelSerializer):
+    nome_convenio = serializers.CharField()
+    
+    class Meta:
+        model = Cliente 
+        fields = '__all__'
+
 class ContratoMS(serializers.ModelSerializer):
+    class Meta:
+        model = Contrato 
+        fields = '__all__'
+
+class ContratoRelatorioMS(serializers.ModelSerializer):
+    nome_banco = serializers.CharField()
+    nome_promotora = serializers.CharField()
+    nome_convenio = serializers.CharField()
+    nome_corretor = serializers.CharField()
+    nome_operacao = serializers.CharField()
+
     class Meta:
         model = Contrato 
         fields = '__all__'

@@ -1,7 +1,12 @@
-
-
 DEMANDAS MENORES ORGANIZADAS
 
 - Achar solução para trocar de rota para a mesma na edição de pré contratos
 
 - Alterar arquivo layout para consertar margem à direita ao abrir filtros
+
+- Trocar os lists por SQL para fazer join com as tabelas de picklists dos filtros
+
+- averiguar se os dashboards seram impactados com as mudanças
+
+- implementar clear states quando cadastrar novo pre contrato
+
