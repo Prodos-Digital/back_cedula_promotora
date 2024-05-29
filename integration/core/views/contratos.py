@@ -52,7 +52,7 @@ class ContratosViewSet(viewsets.ModelViewSet):
                                 cc.dt_pag_cliente,
                                 'YYYY-MM-DD'
                             ) BETWEEN '{dt_inicio}' AND '{dt_final}'
-                                            
+                        OR cc.dt_pag_cliente IS NULL
                         ORDER BY
                             cc.dt_digitacao DESC;
                     """  

@@ -12,7 +12,25 @@ class ContratosRepository():
         OPERACOES_QUERY = f"""AND cc.operacao IN {operacoes}""" if type(operacoes) == tuple else f"""AND cc.operacao = '{operacoes}' """ if operacoes  else ""
         
         SQL = f"""
-            SELECT * FROM core_contrato cc 
+            SELECT
+                cc.*,
+                b.name AS "nome_banco",
+                p.name AS "nome_promotora",
+                c.name AS "nome_convenio",
+                co.name AS "nome_corretor",
+                o.name AS "nome_operacao"
+            FROM
+                core_contrato cc
+            LEFT JOIN bancos b ON
+                cc.banco::VARCHAR = b.id::VARCHAR
+            LEFT JOIN promotoras p ON
+                cc.promotora::VARCHAR = p.id::VARCHAR
+            LEFT JOIN convenios c ON
+                cc.convenio::VARCHAR = c.id::VARCHAR
+            LEFT JOIN corretores co ON
+                cc.corretor ::VARCHAR = co.id::VARCHAR
+            LEFT JOIN operacoes o ON
+                cc.operacao::VARCHAR = o.id::VARCHAR
             WHERE cc.dt_pag_cliente BETWEEN '{dt_inicio}' AND '{dt_final}' 
             {CONVENIOS_QUERY}
             {BANCOS_QUERY}
