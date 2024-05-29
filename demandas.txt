@@ -8,5 +8,4 @@ DEMANDAS MENORES ORGANIZADAS
 
 - averiguar se os dashboards seram impactados com as mudanças
 
-- implementar clear states quando cadastrar novo pre contrato
-
+- testar se as filtragens por data de pagamento com o campo null funcionam

@@ -55,7 +55,8 @@ class ContratosViewSet(viewsets.ModelViewSet):
                                             
                         ORDER BY
                             cc.dt_digitacao DESC;
-                    """               
+                    """  
+                     
             contratos = Contrato.objects.raw(QUERY)              
             serializer = ContratoRelatorioMS(contratos, many=True)
 
