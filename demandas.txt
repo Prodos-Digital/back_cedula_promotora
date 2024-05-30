@@ -1,7 +1,0 @@
-DEMANDAS MENORES ORGANIZADAS
-
-- Achar solução para troca de rota para a mesma na edição de pré contratos
-
-- Alterar arquivo layout para consertar margem à direita ao abrir filtros
-
-- averiguar se os dashboards seram impactados com as mudanças

@@ -192,11 +192,10 @@ class ContratosViewSet(viewsets.ModelViewSet):
                 corretores=corretores, 
                 operacoes=operacoes, 
             )
-            serializer = ContratoMS(contratos, many=True)  
 
             # Contabilizar os dados utilizando pandas
             etl = DashboardContratos()
-            data = etl.execute(serializer.data)         
+            data = etl.execute(contratos)         
 
             return Response(data=data, status=status.HTTP_200_OK)
 
