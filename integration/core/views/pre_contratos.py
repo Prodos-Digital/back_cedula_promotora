@@ -65,9 +65,10 @@ class PreContratosViewSet(viewsets.ModelViewSet):
             user_id = request.GET.get("user_id", "")
             pre_contrato = PreContrato.objects.get(id=pk)
 
-            if user_id and pre_contrato:
-                if int(pre_contrato.user_id_created) != int(user_id):
-                    return Response(data=serializer.data, status=status.HTTP_401_UNAUTHORIZED)
+            # if user_id and pre_contrato:
+            #     if int(pre_contrato.user_id_created) != int(user_id):
+            #         serializer = PreContratoMS(pre_contrato)
+            #         return Response(data=serializer.data, status=status.HTTP_401_UNAUTHORIZED)
 
             serializer = PreContratoMS(pre_contrato)
 
