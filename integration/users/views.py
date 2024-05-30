@@ -18,6 +18,7 @@ class UserViewSet(viewsets.ViewSet):
     def list(self, request):
 
         try:
+        
             users = User.objects.all()
             data = UserSerializer(users, many=True).data
             return Response(data=data, status=status.HTTP_200_OK)

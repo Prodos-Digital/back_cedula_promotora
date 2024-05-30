@@ -17,7 +17,9 @@ class DashboardContratos():
             'data': [],
         }
 
-    def execute(self, data):       
+    def execute(self, data): 
+
+        #print(data)      
 
         '''
             VISÕES OBRIGATÓRIAS:
@@ -52,27 +54,27 @@ class DashboardContratos():
         print(tt_contratos)
 
         #Totalizadores BANCOS
-        bancos = df.groupby(['banco'], as_index=False)['vl_contrato'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
+        bancos = df.groupby(['nome_banco'], as_index=False)['vl_contrato'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
         bancos['perc_qtd'] = round(bancos['qtd']/bancos['qtd'].sum() * 100,2)
         tt_bancos = bancos.to_dict('records')
 
         #Totalizadores CORRETORES
-        corretores = df.groupby(['corretor'], as_index=False)['vl_contrato'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
+        corretores = df.groupby(['nome_corretor'], as_index=False)['vl_contrato'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
         corretores['perc_qtd'] = round(corretores['qtd']/corretores['qtd'].sum() * 100,2)
         tt_corretores = corretores.to_dict('records')
 
         #Totalizadores CONVÊNIOS
-        convenios = df.groupby(['convenio'], as_index=False)['vl_contrato'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
+        convenios = df.groupby(['nome_convenio'], as_index=False)['vl_contrato'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
         convenios['perc_qtd'] = round(convenios['qtd']/convenios['qtd'].sum() * 100,2)
         tt_convenios = convenios.to_dict('records')
 
         #Totalizadores PROMOTORAS
-        promotoras = df.groupby(['promotora'], as_index=False)['vl_contrato'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
+        promotoras = df.groupby(['nome_promotora'], as_index=False)['vl_contrato'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
         promotoras['perc_qtd'] = round(promotoras['qtd']/promotoras['qtd'].sum() * 100,2)
         tt_promotoras = promotoras.to_dict('records')
 
         #Totalizadores OPERAÇÕES
-        operacoes = df.groupby(['operacao'], as_index=False)['vl_contrato'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
+        operacoes = df.groupby(['nome_operacao'], as_index=False)['vl_contrato'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
         operacoes['perc_qtd'] = round(operacoes['qtd']/operacoes['qtd'].sum() * 100,2)
         tt_operacoes = operacoes.to_dict('records')
 
