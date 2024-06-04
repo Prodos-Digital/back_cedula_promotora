@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from integration.core.views import clientes, contratos, despesas, emprestimos, lojas, pre_contratos 
+from integration.core.views import clientes, contratos, despesas, lojas, pre_contratos 
 from integration.core.views.resources import promotoras, convenios, bancos, corretores, operacoes 
 
 router = DefaultRouter()
@@ -9,7 +9,6 @@ router = DefaultRouter()
 router.register(r'clientes', clientes.ClientesViewSet, basename='clientes')
 router.register(r'contratos', contratos.ContratosViewSet, basename='contratos')
 router.register(r'despesas', despesas.DespesasViewSet, basename='despesas')
-router.register(r'emprestimos', emprestimos.EmprestimosViewSet, basename='emprestimos')
 router.register(r'lojas', lojas.LojasViewSet, basename='lojas')
 router.register(r'pre-contratos', pre_contratos.PreContratosViewSet, basename='pre-contratos')
 router.register(r'resources/promotoras', promotoras.PromotorasViewSet, basename='promotoras')
@@ -19,10 +18,12 @@ router.register(r'resources/corretores', corretores.CorretoresViewSet, basename=
 router.register(r'resources/operacoes', operacoes.OperacoesViewSet, basename='operacoes')
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    #path('admin/', admin.site.urls),
     path('', include('django.contrib.auth.urls')),
     path('integration/', include(router.urls)),
     path('integration/', include(('integration.users.routers', 'users'), namespace='users-api')),
-    path('integration/', include(('integration.auth.routers', 'auth'), namespace='auth-api')),
+    path('integration/', include(('integration.auth.routers', 'auth'), namespace='auth-api')),   
+    path('integration/emprestimos/', include('integration.emprestimos.urls', 'emprestimos')),
+
 ]
 
