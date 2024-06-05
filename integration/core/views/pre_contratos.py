@@ -59,7 +59,7 @@ class PreContratosViewSet(viewsets.ModelViewSet):
             print("Error: ", error)
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def retrieve(self, request, pk):          
+    def retrieve(self, request, pk):            
        
         try:
             user_id = request.GET.get("user_id", "")

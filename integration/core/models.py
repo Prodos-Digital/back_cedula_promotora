@@ -38,10 +38,11 @@ class Contrato(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     tabela = models.CharField(max_length=60, null=True, blank=True)
-    tipo_contrato = models.CharField(max_length=20, null=True, blank=True) # (digital ou fisico)
-    status_comissao = models.CharField(max_length=30, null=True, blank=True) #(Paga, aguardando pagamento, aguardando fisco, análise financeira)   Somente para superadmin (Felipe)    
-    iletrado = models.BooleanField(blank=True, null=True) # (sim ou não)
-    documento_salvo = models.BooleanField(blank=True, null=True) # (sim ou não)
+    tipo_contrato = models.CharField(max_length=20, null=True, blank=True) 
+    status_comissao = models.CharField(max_length=30, null=True, blank=True)    
+    iletrado = models.BooleanField(blank=True, null=True)
+    documento_salvo = models.BooleanField(blank=True, null=True) 
+    representante_legal = models.BooleanField(blank=True, null=True)
     
     class Meta:
         managed = False
@@ -152,16 +153,17 @@ class PreContrato(models.Model):
     porcentagem = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     corretor = models.CharField(max_length=100, null=True, blank=True)
     tabela = models.CharField(max_length=60, null=True, blank=True)
-    tipo_contrato = models.CharField(max_length=20, null=True, blank=True) # (digital ou fisico)
-    status_comissao = models.CharField(max_length=30, null=True, blank=True) #(Paga, aguardando pagamento, aguardando fisco, análise financeira)   Somente para superadmin (Felipe)    
-    iletrado = models.BooleanField(blank=True, null=True) # (sim ou não)
-    documento_salvo = models.BooleanField(blank=True, null=True) # (sim ou não)
+    tipo_contrato = models.CharField(max_length=20, null=True, blank=True) 
+    status_comissao = models.CharField(max_length=30, null=True, blank=True)  
+    iletrado = models.BooleanField(blank=True, null=True) 
+    documento_salvo = models.BooleanField(blank=True, null=True) 
     user_id_created = models.IntegerField(null=True, blank=True)     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     contrato_criado = models.BooleanField(blank=True, null=True, default=False)
     dt_pag_comissao = models.CharField(max_length=255, null=True, blank=True)
     vl_comissao = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    representante_legal = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
