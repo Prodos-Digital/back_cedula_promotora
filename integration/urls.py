@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from integration.core.views import clientes, contratos, despesas, lojas, pre_contratos 
+from integration.core.views import clientes, contratos, despesas, lojas, pre_contratos, futuros_contratos 
 from integration.core.views.resources import promotoras, convenios, bancos, corretores, operacoes 
 
 router = DefaultRouter()
@@ -16,6 +16,7 @@ router.register(r'resources/convenios', convenios.ConveniosViewSet, basename='co
 router.register(r'resources/bancos', bancos.BancosViewSet, basename='bancos')
 router.register(r'resources/corretores', corretores.CorretoresViewSet, basename='corretores')
 router.register(r'resources/operacoes', operacoes.OperacoesViewSet, basename='operacoes')
+router.register(r'futuros-contratos', futuros_contratos.FuturoContratoViewSet, basename='futuros-contratos')
 
 urlpatterns = [
     #path('admin/', admin.site.urls),

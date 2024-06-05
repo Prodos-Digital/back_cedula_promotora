@@ -69,7 +69,6 @@ class CorretorMS(serializers.ModelSerializer):
         fields = '__all__'
 
 class PreContratoMS(serializers.ModelSerializer):   
-
     class Meta:
         model = PreContrato 
         fields = '__all__'
@@ -83,4 +82,9 @@ class PreContratoRelatorioMS(serializers.ModelSerializer):
 
     class Meta:
         model = PreContrato 
+        fields = '__all__'
+
+class FuturoContratoMS(serializers.ModelSerializer):   
+    class Meta:
+        model = FuturoContrato 
         fields = '__all__'
