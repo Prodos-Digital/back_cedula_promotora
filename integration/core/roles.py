@@ -24,6 +24,7 @@ class AppPermissions(AbstractUserRole):
         'app_config_lojas': False,
         'app_config_operacoes': False,
         'app_config_promotoras': False,
+        'app_config_natureza_despesas': False,
         'app_dash_clientes': False,
         'app_dash_contratos': False,
         'app_dash_despesas': False,

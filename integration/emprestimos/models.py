@@ -1,7 +1,9 @@
+import uuid
 from django.db import models
 
 class Cliente(models.Model):
     id = models.BigAutoField(primary_key=True)
+    # uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # cpf = models.CharField(max_length=11, null=True, blank=True)
     # nome = models.CharField(max_length=150, null=True, blank=True)
     # dt_nascimento = models.DateField(null=True, blank=True)

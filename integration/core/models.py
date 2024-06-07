@@ -136,6 +136,15 @@ class Corretor(models.Model):
         managed = False
         db_table = 'corretores'
 
+class NaturezaDespesa(models.Model):
+    id = models.BigAutoField(primary_key=True) 
+    name = models.CharField(max_length=50, blank=True, null=True)
+    is_active = models.BooleanField(default=True, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'natureza_despesas'
+
 class PreContrato(models.Model):
     id = models.BigAutoField(primary_key=True)    
     promotora = models.CharField(max_length=255, null=True, blank=True)

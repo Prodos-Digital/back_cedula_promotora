@@ -23,14 +23,16 @@ class DespesasViewSet(viewsets.ModelViewSet):
         return serializer
 
     def list(self, request):
-
-        dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
-        dt_final = request.GET.get("dt_final", datetime.now())
+        print('entrou no list de despesas')
+        
 
         try:
             #despesas = Despesa.objects.all()
             #despesas = Despesa.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento')
             #serializer = DespesaMS(despesas, many=True)
+
+            dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
+            dt_final = request.GET.get("dt_final", datetime.now())
 
             depesas_repository = DespesasRepository()
             despesas = depesas_repository.get_despesas(dt_inicio, dt_final)
@@ -130,7 +132,7 @@ class DespesasViewSet(viewsets.ModelViewSet):
 
         dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
         dt_final = request.GET.get("dt_final", datetime.now())
-        loja = request.GET.get("loja", "")      
+        loja = request.GET.get("loja", "")    
 
         try:
 
