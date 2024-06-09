@@ -93,3 +93,12 @@ class FuturoContratoMS(serializers.ModelSerializer):
     class Meta:
         model = FuturoContrato 
         fields = '__all__'
+
+class FuturoContratoRelatorioMS(serializers.ModelSerializer):
+    nome_banco = serializers.CharField()  
+    nome_convenio = serializers.CharField()   
+    nome_operacao = serializers.CharField()
+
+    class Meta:
+        model = FuturoContrato 
+        fields = '__all__'

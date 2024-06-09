@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from integration.core.models import FuturoContrato
 from integration.users.models import User
 
-from integration.core.serializer import FuturoContratoMS
+from integration.core.serializer import FuturoContratoMS, FuturoContratoRelatorioMS
 from datetime import datetime, timedelta
 from django.db import transaction
 
@@ -19,13 +19,11 @@ class FuturoContratoViewSet(viewsets.ModelViewSet):
         serializer = super().get_serializer_class()
         return serializer
 
-    def list(self, request):    
-
-        print('Listagem de futuros contratos')
+    def list(self, request):            
 
         dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
         dt_final = request.GET.get("dt_final", datetime.now())
-        print(1)
+       
         try:        
             QUERY = f"""
                         SELECT fc.*, 
@@ -38,12 +36,11 @@ class FuturoContratoViewSet(viewsets.ModelViewSet):
                         LEFT JOIN operacoes o ON fc.operacao::INTEGER = o.id
                         WHERE TO_CHAR(fc.dt_efetivacao_emprestimo, 'YYYY-MM-DD') BETWEEN '{dt_inicio}' AND '{dt_final}'                       
                         ORDER BY fc.dt_efetivacao_emprestimo DESC;
-                    """               
-            print(QUERY)
-            print(2)
+                    """   
+                        
             futuros_contratos = FuturoContrato.objects.raw(QUERY)
-            serializer = FuturoContratoMS(futuros_contratos, many=True)
-            print(3)
+            serializer = FuturoContratoRelatorioMS(futuros_contratos, many=True)
+           
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
         except Exception as error:

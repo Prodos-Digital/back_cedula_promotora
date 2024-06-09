@@ -23,13 +23,8 @@ class DespesasViewSet(viewsets.ModelViewSet):
         return serializer
 
     def list(self, request):
-        print('entrou no list de despesas')
-        
 
         try:
-            #despesas = Despesa.objects.all()
-            #despesas = Despesa.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento')
-            #serializer = DespesaMS(despesas, many=True)
 
             dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
             dt_final = request.GET.get("dt_final", datetime.now())
