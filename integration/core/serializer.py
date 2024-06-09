@@ -68,8 +68,12 @@ class CorretorMS(serializers.ModelSerializer):
         model = Corretor 
         fields = '__all__'
 
-class PreContratoMS(serializers.ModelSerializer):   
+class NaturezaDespesaMS(serializers.ModelSerializer):
+    class Meta:
+        model = NaturezaDespesa 
+        fields = '__all__'
 
+class PreContratoMS(serializers.ModelSerializer):   
     class Meta:
         model = PreContrato 
         fields = '__all__'
@@ -83,4 +87,18 @@ class PreContratoRelatorioMS(serializers.ModelSerializer):
 
     class Meta:
         model = PreContrato 
+        fields = '__all__'
+
+class FuturoContratoMS(serializers.ModelSerializer):   
+    class Meta:
+        model = FuturoContrato 
+        fields = '__all__'
+
+class FuturoContratoRelatorioMS(serializers.ModelSerializer):
+    nome_banco = serializers.CharField()  
+    nome_convenio = serializers.CharField()   
+    nome_operacao = serializers.CharField()
+
+    class Meta:
+        model = FuturoContrato 
         fields = '__all__'

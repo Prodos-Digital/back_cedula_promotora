@@ -7,12 +7,15 @@ class DespesasRepository():
 
         SQL = f"""           
             SELECT
-                cd.*, cl.sg_loja
+                cd.*,
+                cl.sg_loja, 
+                nd.name AS "nome_natureza_despesa"
             FROM
                 core_despesa cd
             LEFT JOIN core_lojas cl 
             ON
                 cd.id_loja = cl.id
+            LEFT JOIN natureza_despesas nd ON cd.natureza_despesa::VARCHAR = nd.id::VARCHAR   
             WHERE cd.dt_vencimento BETWEEN '{dt_inicio}' AND '{dt_final}' 
             ORDER BY
                 dt_vencimento desc;

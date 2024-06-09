@@ -17,12 +17,14 @@ class AppPermissions(AbstractUserRole):
         'app_cadastro_contrato': False,
         'app_cadastro_despesa': False,
         'app_cadastro_pre_contrato': False,
+        'app_cadastro_futuro_contrato': False,
         'app_config_bancos': False,
         'app_config_convenios': False,
         'app_config_corretores': False,
         'app_config_lojas': False,
         'app_config_operacoes': False,
         'app_config_promotoras': False,
+        'app_config_natureza_despesas': False,
         'app_dash_clientes': False,
         'app_dash_contratos': False,
         'app_dash_despesas': False,
@@ -30,5 +32,6 @@ class AppPermissions(AbstractUserRole):
         'app_relatorio_contratos': False,
         'app_relatorio_despesas': False,
         'app_relatorio_pre_contratos': False,
+        'app_relatorio_futuro_contrato': False,
     }
 

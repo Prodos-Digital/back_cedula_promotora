@@ -111,32 +111,3 @@ if __name__ == '__main__':
     etl.execute()
 
 
-
-#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-        # Totalizadores NATUREZA DAS DEPESAS
-        # natureza_despesa = df_despesas.groupby(['natureza_despesa'], as_index=False)['valor'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
-        # natureza_despesa['perc_qtd'] = round(natureza_despesa['qtd']/natureza_despesa['qtd'].sum() * 100,2)
-        # tt_natureza_despesa = natureza_despesa.to_dict('records')
-
-        # #Totalizadores TIPO DAS DEPESAS
-        # tipo_despesas = df_despesas.groupby(['tp_despesa'], as_index=False)['valor'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
-        # tipo_despesas['perc_qtd'] = round(tipo_despesas['qtd']/tipo_despesas['qtd'].sum() * 100,2)
-        # tt_tipo_despesas = tipo_despesas.to_dict('records')
-
-        # #Totalizadores DESCRIÇÃO DAS DESPESAS
-        # descricao = df_despesas.groupby(['descricao'], as_index=False)['valor'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
-        # descricao['perc_qtd'] = round(descricao['qtd']/descricao['qtd'].sum() * 100,2)
-        # tt_descricao = descricao.to_dict('records')
-
-        # #Totalizadores TIPO LOJA
-        # tipo_loja = df_despesas.groupby(['tipo_loja'], as_index=False)['valor'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
-        # tipo_loja['perc_qtd'] = round(tipo_loja['qtd']/tipo_loja['qtd'].sum() * 100,2)
-        # tt_tipo_loja = tipo_loja.to_dict('records')
-
-        # #Totalizadores TIPO LOJA
-        # ano_mes = df_despesas.groupby(['ano_mes'], as_index=False)['valor'].agg(['sum','count']).rename(columns={'sum':'vlr_total', 'count': 'qtd'}).sort_values(by=['qtd'], ascending=False).reset_index()
-        # ano_mes['perc_qtd'] = round(ano_mes['qtd']/ano_mes['qtd'].sum() * 100,2)
-        # tt_ano_mes = ano_mes.to_dict('records')
-
-#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
