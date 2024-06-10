@@ -44,7 +44,7 @@ class ContratosViewSet(viewsets.ModelViewSet):
                         LEFT JOIN convenios c ON
                             cc.convenio::VARCHAR = c.id::VARCHAR
                         LEFT JOIN corretores co ON
-                            cc.corretor ::VARCHAR = co.id::VARCHAR
+                            cc.corretor::VARCHAR = co.id::VARCHAR
                         LEFT JOIN operacoes o ON
                             cc.operacao::VARCHAR = o.id::VARCHAR
                         WHERE
@@ -202,39 +202,4 @@ class ContratosViewSet(viewsets.ModelViewSet):
         except Exception as err:
             print("ERROR>>>", err)
             return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
-        
-
-    @action(detail=False, methods=['GET'], url_path='bancos')
-    def listar_bancos(self, request):        
-
-        try:           
-            data = Contrato.objects.filter().values('banco').distinct().order_by('banco') 
-            return Response(data=data, status=status.HTTP_200_OK)
-
-        except Exception as err:
-            print("ERROR>>>", err)
-            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
-        
-
-    @action(detail=False, methods=['GET'], url_path='promotoras')
-    def listar_promotoras(self, request):        
-
-        try:           
-            data = Contrato.objects.filter().values('promotora').distinct().order_by('promotora') 
-            return Response(data=data, status=status.HTTP_200_OK)
-
-        except Exception as err:
-            print("ERROR>>>", err)
-            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
-
-
-    @action(detail=False, methods=['GET'], url_path='corretores')
-    def listar_corretores(self, request):        
-
-        try:           
-            data = Contrato.objects.filter().values('corretor').distinct().order_by('corretor') 
-            return Response(data=data, status=status.HTTP_200_OK)
-
-        except Exception as err:
-            print("ERROR>>>", err)
-            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
+    

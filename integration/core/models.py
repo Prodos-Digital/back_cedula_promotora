@@ -38,10 +38,11 @@ class Contrato(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     tabela = models.CharField(max_length=60, null=True, blank=True)
-    tipo_contrato = models.CharField(max_length=20, null=True, blank=True) # (digital ou fisico)
-    status_comissao = models.CharField(max_length=30, null=True, blank=True) #(Paga, aguardando pagamento, aguardando fisco, análise financeira)   Somente para superadmin (Felipe)    
-    iletrado = models.BooleanField(blank=True, null=True) # (sim ou não)
-    documento_salvo = models.BooleanField(blank=True, null=True) # (sim ou não)
+    tipo_contrato = models.CharField(max_length=20, null=True, blank=True) 
+    status_comissao = models.CharField(max_length=30, null=True, blank=True)    
+    iletrado = models.BooleanField(blank=True, null=True)
+    documento_salvo = models.BooleanField(blank=True, null=True) 
+    representante_legal = models.BooleanField(blank=True, null=True)
     
     class Meta:
         managed = False
@@ -135,6 +136,15 @@ class Corretor(models.Model):
         managed = False
         db_table = 'corretores'
 
+class NaturezaDespesa(models.Model):
+    id = models.BigAutoField(primary_key=True) 
+    name = models.CharField(max_length=50, blank=True, null=True)
+    is_active = models.BooleanField(default=True, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'natureza_despesas'
+
 class PreContrato(models.Model):
     id = models.BigAutoField(primary_key=True)    
     promotora = models.CharField(max_length=255, null=True, blank=True)
@@ -152,17 +162,45 @@ class PreContrato(models.Model):
     porcentagem = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     corretor = models.CharField(max_length=100, null=True, blank=True)
     tabela = models.CharField(max_length=60, null=True, blank=True)
-    tipo_contrato = models.CharField(max_length=20, null=True, blank=True) # (digital ou fisico)
-    status_comissao = models.CharField(max_length=30, null=True, blank=True) #(Paga, aguardando pagamento, aguardando fisco, análise financeira)   Somente para superadmin (Felipe)    
-    iletrado = models.BooleanField(blank=True, null=True) # (sim ou não)
-    documento_salvo = models.BooleanField(blank=True, null=True) # (sim ou não)
+    tipo_contrato = models.CharField(max_length=20, null=True, blank=True) 
+    status_comissao = models.CharField(max_length=30, null=True, blank=True)  
+    iletrado = models.BooleanField(blank=True, null=True) 
+    documento_salvo = models.BooleanField(blank=True, null=True) 
     user_id_created = models.IntegerField(null=True, blank=True)     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     contrato_criado = models.BooleanField(blank=True, null=True, default=False)
     dt_pag_comissao = models.CharField(max_length=255, null=True, blank=True)
     vl_comissao = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    representante_legal = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'pre_contratos'
+
+class FuturoContrato(models.Model):
+    id = models.BigAutoField(primary_key=True)    
+    nome_cliente = models.CharField(max_length=255, null=True, blank=True)
+    cpf_cliente = models.CharField(max_length=20, null=True, blank=True)
+    nome_rep_legal = models.CharField(max_length=255, null=True, blank=True)
+    cpf_rep_legal = models.CharField(max_length=20, null=True, blank=True)
+    convenio = models.CharField(max_length=100, null=True, blank=True)
+    operacao = models.CharField(max_length=100, null=True, blank=True)
+    banco = models.CharField(max_length=100, null=True, blank=True)    
+    vl_contrato = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)    
+    observacoes = models.TextField(null=True, blank=True)
+    dt_concessao_beneficio = models.DateField(null=True, blank=True)
+    dt_efetivacao_emprestimo = models.DateField(null=True, blank=True)
+    representante_legal = models.BooleanField(blank=True, null=True)
+    iletrado = models.BooleanField(blank=True, null=True)
+    tipo_contrato = models.CharField(max_length=20, null=True, blank=True)  
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        managed = False
+        db_table = 'futuros_contratos'
+
+
+
+   

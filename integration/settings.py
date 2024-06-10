@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'integration.auth',
     'django.contrib.auth',
     'django.contrib.admin',
+    'integration.emprestimos',
 ]
 
 MIDDLEWARE = [
