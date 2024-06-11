@@ -46,7 +46,7 @@ class Emprestimo(models.Model):
         managed = False
         db_table = 'emp_emprestimos'
 
-class ParcelaEmprestimo(models.Model):
+class EmprestimoParcela(models.Model):
     id = models.BigAutoField(primary_key=True)    
     nr_parcela = models.DecimalField(max_digits=2, decimal_places=0, blank=True, null=True)
     dt_vencimento = models.DateField(blank=True, null=True)
@@ -54,7 +54,7 @@ class ParcelaEmprestimo(models.Model):
     tp_pagamento = models.CharField(max_length=40, null=True, blank=True)
     status_pagamento = models.CharField(max_length=40, null=True, blank=True)
     vl_parcial = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
-    emprestimo_id = models.ForeignKey(Emprestimo, verbose_name='Emprestimo', related_name='ParcelaEmprestimo', on_delete=models.CASCADE, help_text='Emprestimo')
+    emprestimo = models.ForeignKey(Emprestimo, verbose_name='Emprestimo', related_name='EmprestimoParcela', on_delete=models.CASCADE)
 
     class Meta:
         managed = False
