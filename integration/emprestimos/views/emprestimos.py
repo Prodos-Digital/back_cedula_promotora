@@ -20,8 +20,8 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
         print('Entrou aqui no list de emprestimos...')
 
         try:
-            clientes = Emprestimo.objects.all()
-            serializer = EmprestimoMS(clientes, many=True)
+            emprestimo = Emprestimo.objects.all()
+            serializer = EmprestimoMS(emprestimo, many=True)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
         except Exception as err:
@@ -29,9 +29,7 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
             return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)     
 
 
-    def create(self, request):
-
-        print(request.data)
+    def create(self, request):       
       
         try:
 
@@ -41,8 +39,7 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
 
                 serializer = EmprestimoMS(data=data) 
                 if serializer.is_valid():
-                    emprestimo = serializer.save()                      
-                
+                    emprestimo = serializer.save()                     
                     data_emprestimo = datetime.strptime(data['dt_cobranca'], "%Y-%m-%d")
                     installments = []
 
@@ -50,6 +47,7 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
                             nr_parcela = parcela + 1
                             due_date = (data_emprestimo + relativedelta(months=nr_parcela)).date()
                             print('due_date: ', due_date)
+
                             installment = EmprestimoParcela(
                                 dt_vencimento=due_date,
                                 nr_parcela=nr_parcela,
@@ -60,9 +58,7 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
                                 emprestimo=emprestimo
                             )
 
-                            installments.append(installment)
-
-                    print('installments: ',installments)
+                            installments.append(installment)                    
 
                     EmprestimoParcela.objects.bulk_create(installments)
 
@@ -80,8 +76,9 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
         print('Entrou aqui no retrieve de emprestimos ...')
 
         try:
-            cliente = Emprestimo.objects.get(id=pk)           
-            serializer = EmprestimoMS(cliente)
+            emprestimo = Emprestimo.objects.get(id=pk)           
+            #serializer = EmprestimoMS(emprestimo)
+            serializer = EmprestimoMS(instance=emprestimo)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -93,8 +90,8 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
     def update(self, request, pk):      
 
         try:
-            cliente = Emprestimo.objects.get(id=pk)
-            serializer = EmprestimoMS(instance=cliente, data=request.data)
+            emprestimo = Emprestimo.objects.get(id=pk)
+            serializer = EmprestimoMS(instance=emprestimo, data=request.data)
 
             if serializer.is_valid():
                 serializer.save()
@@ -109,8 +106,8 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
     def destroy(self, request, pk):
 
         try:
-            cliente = Emprestimo.objects.get(id=pk)
-            cliente.delete()
+            emprestimo = Emprestimo.objects.get(id=pk)
+            emprestimo.delete()
 
             return Response(status=status.HTTP_200_OK)
 
