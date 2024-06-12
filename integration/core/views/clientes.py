@@ -61,7 +61,7 @@ class ClientesViewSet(viewsets.ModelViewSet):
     def update(self, request, pk):
 
         try:
-            cliente = Cliente.objects.get(cpf=pk)
+            cliente = Cliente.objects.get(id=pk)
             serializer = ClienteMS(instance=cliente, data=request.data)
 
             if serializer.is_valid():
