@@ -24,15 +24,12 @@ class ClientesViewSet(viewsets.ModelViewSet):
         except Exception as err:
             print("ERROR>>>", err)
             return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)     
+        
+    def retrieve(self, request, pk):           
 
-
-    def retrieve(self, request, pk):            
-        print('Entrou aqui no retrieve de clientes de emprestimos...')
-
-        try:
-            cliente = EmpCliente.objects.get(id=pk)           
+        try:           
+            cliente = EmpCliente.objects.get(id=pk)   
             serializer = EmpClienteMS(cliente)
-
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
         except Exception as error:
@@ -42,7 +39,6 @@ class ClientesViewSet(viewsets.ModelViewSet):
     def create(self, request):
       
         try:
-
             cpf = request.data.get("cpf")           
            
             if EmpCliente.objects.filter(cpf=cpf).exists():                
