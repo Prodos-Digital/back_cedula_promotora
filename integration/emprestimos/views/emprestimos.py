@@ -16,8 +16,7 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
         serializer = super().get_serializer_class()
         return serializer
 
-    def list(self, request):
-        print('Entrou aqui no list de emprestimos...')
+    def list(self, request):        
 
         try:
             emprestimo = Emprestimo.objects.all()

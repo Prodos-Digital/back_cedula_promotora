@@ -54,6 +54,7 @@ class EmprestimoParcela(models.Model):
     status_pagamento = models.CharField(max_length=40, null=True, blank=True)
     vl_parcial = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
     emprestimo = models.ForeignKey(Emprestimo, verbose_name='Emprestimo', related_name='EmprestimoParcela', on_delete=models.CASCADE)
+    vl_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     class Meta:
         managed = False
