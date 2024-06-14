@@ -1,0 +1,3 @@
+
+
+- verificar logica para ordenar parcelas sendo que algums pagam parcial ou só o juros
