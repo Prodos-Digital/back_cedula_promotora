@@ -46,13 +46,12 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
                     for parcela in range(data['qt_parcela']):
                             nr_parcela = parcela + 1
                             due_date = (data_emprestimo + relativedelta(months=nr_parcela)).date()
-                            print('due_date: ', due_date)
 
                             installment = EmprestimoParcela(
                                 dt_vencimento=due_date,
                                 nr_parcela=nr_parcela,
                                 dt_pagamento=None,
-                                tp_pagamento="PARCELA",
+                                tp_pagamento="parcela",
                                 status_pagamento="pendente",
                                 vl_parcial=None,
                                 emprestimo=emprestimo
