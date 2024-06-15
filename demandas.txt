@@ -1,3 +1,7 @@
 
 
 - verificar logica para ordenar parcelas sendo que algums pagam parcial ou só o juros
+
+- testar ordenacao do nr das parcelas
+
+- decidir no list de emprestimos qual data ordenar dt_cobranca, dt_emprestimo ou dt_created

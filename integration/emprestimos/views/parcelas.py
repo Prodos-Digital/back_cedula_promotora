@@ -24,6 +24,8 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
         try:
             dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
             dt_final = request.GET.get("dt_final", datetime.now())
+            tipo_parcela = request.GET.get("tipo_parcela", "")
+            print(tipo_parcela)
                      
             parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento')  
             serializer = EmprestimoParcelaMS(parcelas, many=True)
@@ -50,14 +52,27 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
     def update(self, request, pk):      
 
         try:
-            parcela = EmprestimoParcela.objects.get(id=pk)
-            serializer = EmprestimoParcelaMS(instance=parcela, data=request.data)
 
-            if serializer.is_valid():
-                serializer.save()
-                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            data = request.data 
+            print(data)
+            
+            if data['tp_pagamento'] == 'vlr_total' or data['tp_pagamento'] == 'parcial':
+                print('A')
+                with transaction.atomic():
+                    parcela = EmprestimoParcela.objects.filter(id=pk).update(                 
+                        dt_pagamento=data['dt_pagamento'], 
+                        tp_pagamento = data['tp_pagamento'], 
+                        vl_parcial=data['vl_parcial']
+                        )
+            else:
+                print('B')
+                parcelas = EmprestimoParcela.objects.filter(emprestimo=data['vl_parcial'])
+                print(parcelas)
+                for parcela in parcelas:
+                    print('parcela: ',parcela)
+                    
 
-            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={'message': 'parcela atualizada com sucesso'},status=status.HTTP_200_OK)
 
         except Exception as error:
             print("Error: ", error)

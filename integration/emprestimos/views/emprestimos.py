@@ -19,7 +19,10 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
     def list(self, request):        
 
         try:
-            emprestimo = Emprestimo.objects.all()
+            dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
+            dt_final = request.GET.get("dt_final", datetime.now())
+        
+            emprestimo = Emprestimo.objects.filter(dt_cobranca__range=[dt_inicio, dt_final]).order_by('dt_cobranca')  
             serializer = EmprestimoMS(emprestimo, many=True)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -33,6 +36,7 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
         try:
 
             data = request.data
+            
 
             with transaction.atomic():
 
@@ -40,11 +44,13 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
                 if serializer.is_valid():
                     emprestimo = serializer.save()                     
                     data_emprestimo = datetime.strptime(data['dt_cobranca'], "%Y-%m-%d")
+                    vl_parcela = data['vl_parcela']
                     installments = []
 
                     for parcela in range(data['qt_parcela']):
+                            mes_cobranca = parcela + 0
                             nr_parcela = parcela + 1
-                            due_date = (data_emprestimo + relativedelta(months=nr_parcela)).date()
+                            due_date = (data_emprestimo + relativedelta(months=mes_cobranca)).date()
 
                             installment = EmprestimoParcela(
                                 dt_vencimento=due_date,
@@ -53,6 +59,7 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
                                 tp_pagamento="parcela",
                                 status_pagamento="pendente",
                                 vl_parcial=None,
+                                vl_parcela= vl_parcela,
                                 emprestimo=emprestimo
                             )
 
