@@ -34,9 +34,7 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
     def create(self, request):       
       
         try:
-
             data = request.data
-            
 
             with transaction.atomic():
 
@@ -60,7 +58,8 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
                                 status_pagamento="pendente",
                                 vl_parcial=None,
                                 vl_parcela= vl_parcela,
-                                emprestimo=emprestimo
+                                emprestimo=emprestimo,
+                                qtd_tt_parcelas=data['qt_parcela']
                             )
 
                             installments.append(installment)                    

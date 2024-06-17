@@ -25,17 +25,25 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
             dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
             dt_final = request.GET.get("dt_final", datetime.now())
             tipo_parcela = request.GET.get("tipo_parcela", "")
-            print('tipo_parcela: ',tipo_parcela)
-                     
-            parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento')  
-            serializer = EmprestimoParcelaMS(parcelas, many=True)
 
+            if tipo_parcela == 'todos':
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento') 
+            elif tipo_parcela == 'pendentes':
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], dt_pagamento__isnull=True).order_by('dt_vencimento') 
+            elif tipo_parcela == 'pagos':
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], dt_pagamento__isnull=False).order_by('dt_vencimento') 
+            elif tipo_parcela == 'pago_parcial':
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final],  vl_parcial__isnull=False).order_by('dt_vencimento') 
+            elif tipo_parcela == 'juros':
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], tp_pagamento='juros').order_by('dt_vencimento') 
+            
+            serializer = EmprestimoParcelaMS(parcelas, many=True)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
         except Exception as error:
             print("Error: ", error)
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
-        
+        s
     def retrieve(self, request, pk):     
 
         try:
@@ -53,54 +61,41 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
 
         try:
 
-            data = request.data 
-            
-            print(data)
-            print(data['emprestimo'])
+            data = request.data           
             
             if data['tp_pagamento'] == 'vlr_total' or data['tp_pagamento'] == 'parcial':
                 with transaction.atomic():
                     parcela = EmprestimoParcela.objects.filter(id=pk).update(                 
-                        dt_pagamento=data['dt_pagamento'], 
-                        tp_pagamento = data['tp_pagamento'], 
-                        vl_parcial=data['vl_parcial']
+                        dt_pagamento=data['dt_pagamento'],                         
+                        vl_parcial=data['vl_parcial'],
+                        status_pagamento='pago'
                         )
             else:
                 with transaction.atomic():
-                    print(1)
                     parcelas = EmprestimoParcela.objects.filter(
                         emprestimo=data['emprestimo'],
                         nr_parcela__gte=data['nr_parcela']
-                        # nr_parcela__isnull=False,
                         # dt_pagamento__isnull=True,
+                        # nr_parcela__isnull=False,
                     )
-                    print(2)
-
+                   
                     parcela_a_copiar = parcelas.first()
-                    print(parcela_a_copiar)
-                    print(3)
-
-                     # Criar a nova parcela como uma cópia da selecionada
+                    
                     nova_parcela = EmprestimoParcela.objects.create(
                         emprestimo=parcela_a_copiar.emprestimo,
                         nr_parcela=None,
                         dt_vencimento=parcela_a_copiar.dt_vencimento,
                         dt_pagamento=data['dt_pagamento'],
-                        tp_pagamento=data['tp_pagamento'],
-                        status_pagamento=None,
+                        tp_pagamento='juros',
+                        status_pagamento='pago',
                         vl_parcial=None,
                         vl_parcela=None
                     )
 
-                    print(4)
-                    
                     for parcela in parcelas:
-                        due_date = (parcela.dt_vencimento + relativedelta(months=1))
-                        #parcela.tp_pagamento = data['tp_pagamento']
+                        due_date = (parcela.dt_vencimento + relativedelta(months=1))                       
                         parcela.dt_vencimento = due_date
                         parcela.save()
-
-                    
 
             return Response(data={'message': 'parcela atualizada com sucesso'},status=status.HTTP_200_OK)
 
