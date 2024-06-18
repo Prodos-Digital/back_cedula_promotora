@@ -21,8 +21,13 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
         try:
             dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
             dt_final = request.GET.get("dt_final", datetime.now())
-        
-            emprestimo = Emprestimo.objects.filter(dt_cobranca__range=[dt_inicio, dt_final]).order_by('dt_cobranca')  
+            dt_filter = request.GET.get("dt_filter","")
+
+            if dt_filter == 'dt_emprestimo':
+                emprestimo = Emprestimo.objects.filter(dt_emprestimo__range=[dt_inicio, dt_final]).order_by('dt_emprestimo')
+            else:
+                emprestimo = Emprestimo.objects.filter(dt_cobranca__range=[dt_inicio, dt_final]).order_by('dt_cobranca')  
+                
             serializer = EmprestimoMS(emprestimo, many=True)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 

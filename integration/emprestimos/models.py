@@ -56,6 +56,7 @@ class EmprestimoParcela(models.Model):
     emprestimo = models.ForeignKey(Emprestimo, verbose_name='Emprestimo', related_name='EmprestimoParcela', on_delete=models.CASCADE)
     vl_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     qtd_tt_parcelas = models.IntegerField(blank=True, null=True)
+    dt_prev_pag_parcial_restante = models.DateField(blank=True, null=True)
 
     class Meta:
         managed = False

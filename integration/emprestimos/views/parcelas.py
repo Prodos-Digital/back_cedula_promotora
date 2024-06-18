@@ -19,7 +19,6 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
     
             
     def list(self, request):    
-        print('Entrou no list de parcelas') 
 
         try:
             dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
@@ -43,7 +42,7 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
         except Exception as error:
             print("Error: ", error)
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
-        s
+        
     def retrieve(self, request, pk):     
 
         try:
@@ -66,17 +65,16 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
             if data['tp_pagamento'] == 'vlr_total' or data['tp_pagamento'] == 'parcial':
                 with transaction.atomic():
                     parcela = EmprestimoParcela.objects.filter(id=pk).update(                 
-                        dt_pagamento=data['dt_pagamento'],                         
-                        vl_parcial=data['vl_parcial'],
-                        status_pagamento='pago'
+                            dt_pagamento=data['dt_pagamento'], 
+                            status_pagamento='pago',
+                            vl_parcial = None if data['tp_pagamento'] == 'vlr_total' else data['vl_parcial'],
+                            dt_prev_pag_parcial_restante = None if data['tp_pagamento'] == 'vlr_total' else data['dt_prev_pag_parcial_restante']
                         )
             else:
                 with transaction.atomic():
                     parcelas = EmprestimoParcela.objects.filter(
                         emprestimo=data['emprestimo'],
                         nr_parcela__gte=data['nr_parcela']
-                        # dt_pagamento__isnull=True,
-                        # nr_parcela__isnull=False,
                     )
                    
                     parcela_a_copiar = parcelas.first()
@@ -89,7 +87,8 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
                         tp_pagamento='juros',
                         status_pagamento='pago',
                         vl_parcial=None,
-                        vl_parcela=None
+                        vl_parcela=None,
+                        dt_prev_pag_parcial_restante=None
                     )
 
                     for parcela in parcelas:

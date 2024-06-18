@@ -1,7 +1,5 @@
-
-
 - testar ordenacao do nr das parcelas
 
-- decidir no list de emprestimos qual data ordenar dt_cobranca, dt_emprestimo ou dt_created
+- Criar nova conta de acesso
 
-- adicionar flag para que somente um user autorizado acesse a página (flag ou superuser)
+- cadastro de emprestimos ser interligado com os clientes cadastrados para poder exibir os dados no modal de detalhes de cobrança
