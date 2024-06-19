@@ -6,6 +6,7 @@ from integration.emprestimos.models import Emprestimo, EmprestimoParcela
 from integration.emprestimos.serializer import EmprestimoMS
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+import pandas as pd
 
 class EmprestimosViewSet(viewsets.ModelViewSet):
     queryset = Emprestimo.objects.all()
@@ -29,7 +30,35 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
                 emprestimo = Emprestimo.objects.filter(dt_cobranca__range=[dt_inicio, dt_final]).order_by('dt_cobranca')  
                 
             serializer = EmprestimoMS(emprestimo, many=True)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+            df = pd.DataFrame(serializer.data)
+
+            if df.empty:
+                data = {
+                    'data': [],
+                    'indicadores': {
+                        "vl_emprestimo": 0,
+                        "vl_capital_giro": 0,
+                        "qtd_emprestimos": 0,
+                       
+                    }
+                }
+
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            
+            df["vl_emprestimo"] = df["vl_emprestimo"].astype(float)
+            df["vl_capital_giro"] = df["vl_capital_giro"].astype(float)            
+        
+            data = {
+                'data': serializer.data,
+                'indicadores': {
+                    "vl_emprestimo": df["vl_emprestimo"].sum(),
+                    "vl_capital_giro": df["vl_capital_giro"].sum(),    
+                    "qtd_emprestimos": df["id"].count(),              
+                }
+            }
+
+            return Response(data=data, status=status.HTTP_200_OK)
 
         except Exception as err:
             print("ERROR>>>", err)
