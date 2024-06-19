@@ -28,6 +28,7 @@ class Emprestimo(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     cpf = models.CharField(max_length=11, null=True, blank=True)
     nome = models.CharField(max_length=200, null=True, blank=True)
+    telefone = models.CharField(max_length=20, null=True, blank=True)
     vl_emprestimo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
     # vl_tt_emprestimo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) Verificar necessidade desse campo
     vl_capital_giro = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
