@@ -62,3 +62,21 @@ class EmprestimoParcela(models.Model):
     class Meta:
         managed = False
         db_table = 'emp_emprestimo_parcelas'
+
+class Acordo(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    cpf = models.CharField(max_length=11, null=True, blank=True)
+    nome = models.CharField(max_length=200, null=True, blank=True)
+    telefone = models.CharField(max_length=20, null=True, blank=True)
+    vl_emprestimo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
+    vl_cobrado = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
+    dt_acordo = models.DateField(null=True, blank=True)  
+    vl_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
+    observacoes = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        managed = False
+        db_table = 'emp_acordos'

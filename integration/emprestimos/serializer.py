@@ -15,3 +15,8 @@ class EmprestimoParcelaMS(serializers.ModelSerializer):
     class Meta:
         model = EmprestimoParcela 
         fields = '__all__'
+
+class AcordoMS(serializers.ModelSerializer):
+    class Meta:
+        model = EmprestimoParcela 
+        fields = '__all__'
