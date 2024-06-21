@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import  IsAuthenticated
 from integration.emprestimos.models import EmpCliente 
 from integration.emprestimos.serializer import EmpClienteMS
+from rest_framework.decorators import action
 
 class ClientesViewSet(viewsets.ModelViewSet):
     queryset = EmpCliente.objects.all()

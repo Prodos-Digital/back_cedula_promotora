@@ -152,6 +152,22 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
         except Exception as error:
             print("Error: ", error)
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+    @action(detail=False, methods=['GET'], url_path='historico-cliente')
+    def historico_emprestimo(self, request):  
+        print('Entrou no historico de emprestimo')
+
+        try:
+            cpf = request.GET.get("cpf", "")
+            emprestimos = Emprestimo.objects.filter(cpf=cpf)
+            serializer = EmprestimoMS(emprestimos, many=True)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as err:
+            print("ERROR>>>", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)     
+        
 
     @action(detail=False, methods=['GET'], url_path='dashboard')
     def dashboard_despesas(self, request):  
@@ -159,38 +175,10 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
 
         dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
         dt_final = request.GET.get("dt_final", datetime.now())
-        loja = request.GET.get("loja", "")    
-
+      
         try:
 
-            if loja: 
-                 if Despesa.objects.filter(id_loja=int(loja)).exists():                            
-                    despesas = Despesa.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], id_loja=int(loja)).order_by('dt_vencimento')
-                 else:
-                    despesas = Despesa.objects.none()
-              
-                 serializer_despesas = DespesaMS(despesas, many=True)
-                 
-                 contratos = Contrato.objects.filter(dt_pag_cliente__range=[dt_inicio, dt_final]).order_by('dt_pag_cliente')
-                 serializer_contratos = ContratoMS(contratos, many=True)                 
-                 
-                 etl = DashboardDespesas()
-                 data = etl.execute(serializer_despesas.data, serializer_contratos.data, dt_inicio, dt_final)
-
-                 return Response(data=data, status=status.HTTP_200_OK)
-            
-            else:    
-
-                despesas = Despesa.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento')
-                serializer_despesas = DespesaMS(despesas, many=True)
-
-                contratos = Contrato.objects.filter(dt_pag_cliente__range=[dt_inicio, dt_final]).order_by('dt_pag_cliente')
-                serializer_contratos = ContratoMS(contratos, many=True)
-            
-                etl = DashboardDespesas()
-                data = etl.execute(serializer_despesas.data, serializer_contratos.data, dt_inicio, dt_final)
-                return Response(data=data, status=status.HTTP_200_OK)
-
+            pass
             
         except Exception as err:
             print("ERROR>>>", err)

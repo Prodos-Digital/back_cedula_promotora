@@ -33,12 +33,14 @@ class AcordosViewSet(viewsets.ModelViewSet):
             print("Error: ", error)
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def create(self, request):       
+    def create(self, request):   
+
+        print('Entrou no create de acordos')    
       
         try:
             data = request.data
 
-            serializer = Acordo(data=data) 
+            serializer = AcordoMS(data=data) 
             if serializer.is_valid():
                 serializer.save()
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
