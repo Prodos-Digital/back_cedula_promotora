@@ -2,4 +2,4 @@
 
 - Criar nova conta de acesso
 
-- cadastro de emprestimos ser interligado com os clientes cadastrados para poder exibir os dados no modal de detalhes de cobrança
+- fazer as parcelas de acordo nao aparecerem mais

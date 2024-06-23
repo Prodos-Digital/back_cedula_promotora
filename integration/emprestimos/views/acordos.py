@@ -3,10 +3,9 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import  IsAuthenticated
-from integration.emprestimos.models import Acordo 
+from integration.emprestimos.models import Acordo, Emprestimo, EmprestimoParcela
 from integration.emprestimos.serializer import AcordoMS
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 
 class AcordosViewSet(viewsets.ModelViewSet):
     queryset = Acordo.objects.all()
@@ -34,19 +33,34 @@ class AcordosViewSet(viewsets.ModelViewSet):
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):   
-
-        print('Entrou no create de acordos')    
       
         try:
+            id_emprestimo = request.GET.get("id_emprestimo")
             data = request.data
 
-            serializer = AcordoMS(data=data) 
-            if serializer.is_valid():
-                serializer.save()
-                return Response(data=serializer.data, status=status.HTTP_200_OK)
-            
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            with transaction.atomic(): 
+                if id_emprestimo:
+                    emprestimo = Emprestimo.objects.get(id=id_emprestimo)
+                    emprestimo.status = 'acordo'
+                    emprestimo.save()       
+
+                    parcelas = EmprestimoParcela.objects.filter(
+                        emprestimo=id_emprestimo
+                    ).exclude( 
+                        status_pagamento__in=['pago', 'pago_parcial']
+                    ) 
+
+                    for parcela in parcelas:
+                        parcela.tp_pagamento = 'acordo'
+                        parcela.save()
+
+       
+                serializer = AcordoMS(data=data) 
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
          
         except Exception as err:
             print("ERROR>>>", err)

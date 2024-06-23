@@ -40,21 +40,36 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
                     'indicadores': {
                         "vl_emprestimo": 0,
                         "vl_capital_giro": 0,
-                        "qtd_emprestimos": 0,                       
+                        "qtd_emprestimos": {
+                            'total': 0,
+                            'acordo': 0,
+                            'andamento': 0,
+                            'finalizado':0,
+                    },                         
                     }
                 }
 
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
             
             df["vl_emprestimo"] = df["vl_emprestimo"].astype(float)
-            df["vl_capital_giro"] = df["vl_capital_giro"].astype(float)            
+            df["vl_capital_giro"] = df["vl_capital_giro"].astype(float)      
+
+            status_filtro = ['acordo', 'finalizado', 'andamento']
+            filtered_df = df[df['status'].isin(status_filtro)]
+            contagem_por_status = filtered_df.groupby('status').size()
+            contagem_por_status_dict = contagem_por_status.to_dict()     
         
             data = {
                 'data': serializer.data,
                 'indicadores': {
                     "vl_emprestimo": df["vl_emprestimo"].sum(),
                     "vl_capital_giro": df["vl_capital_giro"].sum(),    
-                    "qtd_emprestimos": df["id"].count(),              
+                    "qtd_emprestimos": {
+                        'total': df["id"].count(),
+                        'acordo': contagem_por_status_dict.get('acordo', 0),
+                        'andamento': contagem_por_status_dict.get('andamento', 0),
+                        'finalizado': contagem_por_status_dict.get('finalizado', 0),
+                    },              
                 }
             }
 

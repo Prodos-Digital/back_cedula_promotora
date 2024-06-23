@@ -28,14 +28,17 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
             if tipo_parcela == 'todos':
                 parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento') 
             elif tipo_parcela == 'pendentes':
-                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], dt_pagamento__isnull=True).order_by('dt_vencimento') 
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], dt_pagamento__isnull=True).exclude(tp_pagamento='acordo').order_by('dt_vencimento') 
             elif tipo_parcela == 'pagos':
-                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], dt_pagamento__isnull=False).order_by('dt_vencimento') 
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], dt_pagamento__isnull=False).exclude(tp_pagamento='acordo').order_by('dt_vencimento') 
             elif tipo_parcela == 'pago_parcial':
-                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final],  vl_parcial__isnull=False).order_by('dt_vencimento') 
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final],  vl_parcial__isnull=False).exclude(tp_pagamento='acordo').order_by('dt_vencimento') 
             elif tipo_parcela == 'juros':
-                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], tp_pagamento='juros').order_by('dt_vencimento') 
-            
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], tp_pagamento='juros').exclude(tp_pagamento='acordo').order_by('dt_vencimento') 
+            elif tipo_parcela == 'acordos':
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], tp_pagamento='acordo').order_by('dt_vencimento') 
+
+
             serializer = EmprestimoParcelaMS(parcelas, many=True)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -60,16 +63,24 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
 
         try:
 
-            data = request.data           
+            data = request.data  
             
             if data['tp_pagamento'] == 'vlr_total' or data['tp_pagamento'] == 'parcial':
                 with transaction.atomic():
-                    parcela = EmprestimoParcela.objects.filter(id=pk).update(                 
-                            dt_pagamento=data['dt_pagamento'], 
-                            status_pagamento='pago',
-                            vl_parcial = None if data['tp_pagamento'] == 'vlr_total' else data['vl_parcial'],
-                            dt_prev_pag_parcial_restante = None if data['tp_pagamento'] == 'vlr_total' else data['dt_prev_pag_parcial_restante']
-                        )
+
+                    emprestimo = Emprestimo.objects.filter(id=data['emprestimo']).first()  
+                    parcela = EmprestimoParcela.objects.filter(id=pk).first()
+
+                    if data['tp_pagamento'] == 'vlr_total' and parcela.nr_parcela == parcela.qtd_tt_parcelas:
+                        emprestimo.status = 'finalizado'
+                        emprestimo.save()
+
+                    parcela.dt_pagamento = data['dt_pagamento']
+                    parcela.status_pagamento =  'pago' if data['tp_pagamento'] == 'vlr_total' else 'pago_parcial'
+                    parcela.vl_parcial = None if data['tp_pagamento'] == 'vlr_total' else data['vl_parcial']
+                    parcela.dt_prev_pag_parcial_restante = None if data['tp_pagamento'] == 'vlr_total' else data['dt_prev_pag_parcial_restante']
+                    parcela.save()
+                    
             else:
                 with transaction.atomic():
                     parcelas = EmprestimoParcela.objects.filter(
