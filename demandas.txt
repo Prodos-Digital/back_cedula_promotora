@@ -1,5 +1,1 @@
-- testar ordenacao do nr das parcelas
-
 - Criar nova conta de acesso
-
-- fazer as parcelas de acordo nao aparecerem mais

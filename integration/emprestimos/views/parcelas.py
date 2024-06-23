@@ -47,10 +47,10 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
         
     def retrieve(self, request, pk):     
-
+        ''' Aqui é onde lista as parcelas a serem exibidas no modal de detalhes do empréstimo '''
         try:
             
-            parcelas = EmprestimoParcela.objects.filter(emprestimo=pk)           
+            parcelas = EmprestimoParcela.objects.filter(emprestimo=pk).order_by('dt_pagamento')           
             serializer = EmprestimoParcelaMS(parcelas, many=True)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
