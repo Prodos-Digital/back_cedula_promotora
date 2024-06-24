@@ -20,10 +20,11 @@ class AcordosViewSet(viewsets.ModelViewSet):
     def list(self, request):    
 
         try:
+            print('Entrou aqui no list de acordos')
             dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
             dt_final = request.GET.get("dt_final", datetime.now())           
            
-            parcelas = Acordo.objects.filter(dt_acordo__range=[dt_inicio, dt_final]).order_by('dt_acordo') 
+            parcelas = Acordo.objects.filter(dt_acordo__range=[dt_inicio, dt_final]).order_by('-dt_acordo') 
             serializer = AcordoMS(parcelas, many=True)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -70,10 +71,22 @@ class AcordosViewSet(viewsets.ModelViewSet):
 
         try:
             
-            parcelas = Acordo.objects.filter(id=pk)           
-            serializer = AcordoMS(parcelas, many=True)
+            acordo = Acordo.objects.filter(id=pk)           
+            serializer = AcordoMS(acordo, many=True)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as error:
+            print("Error: ", error)
+            return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, pk):
+
+        try:
+            acordo = Acordo.objects.get(id=pk)
+            acordo.delete()
+
+            return Response(status=status.HTTP_200_OK)
 
         except Exception as error:
             print("Error: ", error)

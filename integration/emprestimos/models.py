@@ -74,6 +74,7 @@ class Acordo(models.Model):
     dt_acordo = models.DateField(null=True, blank=True)  
     vl_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
     observacoes = models.TextField(null=True, blank=True)
+    qt_parcela = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     emprestimo_referencia = models.IntegerField(blank=True, null=True)
