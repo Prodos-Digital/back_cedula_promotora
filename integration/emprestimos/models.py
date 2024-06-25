@@ -33,6 +33,7 @@ class Emprestimo(models.Model):
     # vl_tt_emprestimo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) Verificar necessidade desse campo
     vl_capital_giro = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
     perc_juros = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    vl_juros = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     qt_parcela = models.IntegerField(blank=True, null=True)
     vl_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
     status = models.CharField(max_length=40, null=True, blank=True)
