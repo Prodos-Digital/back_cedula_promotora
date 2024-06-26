@@ -16,6 +16,7 @@ class ParcelasEmprestimosRepository():
                 FROM
                     emp_emprestimos ee
                 WHERE ee.dt_cobranca BETWEEN '{dt_inicio}' AND '{dt_final}'
+                AND ee.status <> 'acordo'
                 ORDER BY ee.dt_cobranca DESC;
             """   
            

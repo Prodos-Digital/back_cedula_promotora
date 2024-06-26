@@ -51,22 +51,28 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
             print("Error: ", error)
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def update(self, request, pk):      
+    def update(self, request, pk):   
+        print('Entrou no update de parcelas')   
 
         try:
-
+            print(1)
             data = request.data  
-            
+            print(2)
             if data['tp_pagamento'] == 'vlr_total' or data['tp_pagamento'] == 'parcial':
+                print(3)
                 with transaction.atomic():
+                    print(4)
 
                     emprestimo = Emprestimo.objects.filter(id=data['emprestimo']).first()  
+                    print(5)
                     parcela = EmprestimoParcela.objects.filter(id=pk).first()
+                    print(6)
 
                     if data['tp_pagamento'] == 'vlr_total' and parcela.nr_parcela == parcela.qtd_tt_parcelas:
+                        print(7)
                         emprestimo.status = 'finalizado'
                         emprestimo.save()
-
+                    print(8)
                     parcela.dt_pagamento = data['dt_pagamento']
                     parcela.status_pagamento =  'pago' if data['tp_pagamento'] == 'vlr_total' else 'pago_parcial'
                     parcela.vl_parcial = None if data['tp_pagamento'] == 'vlr_total' else data['vl_parcial']
