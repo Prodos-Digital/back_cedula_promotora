@@ -7,8 +7,6 @@ from integration.emprestimos.models import Emprestimo, EmprestimoParcela
 from integration.emprestimos.serializer import EmprestimoMS, EmprestimoParcelaMS
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from integration.emprestimos.repository.parcelas import ParcelasEmprestimosRepository
-from integration.emprestimos.usecases.etl.parcelas import EtlParcelasEmprestimos
 
 class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
     queryset = EmprestimoParcela.objects.all()
@@ -26,14 +24,20 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
             dt_final = request.GET.get("dt_final", datetime.now())
             tipo_parcela = request.GET.get("tipo_parcela", "")
 
-            emprestimo_repository = ParcelasEmprestimosRepository()
-            emprestimos = emprestimo_repository.get_emprestimos_parcelas(dt_inicio, dt_final, tipo_parcela)
+            if tipo_parcela == 'todos':
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento') 
+            elif tipo_parcela == 'pendentes':                
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], status_pagamento__in=['pendente', 'pago_parcial']).exclude(tp_pagamento='acordo').order_by('dt_vencimento') 
+            elif tipo_parcela == 'pagos':
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], status_pagamento='pago').exclude(tp_pagamento__in=['acordo','juros']).order_by('dt_vencimento') 
+            elif tipo_parcela == 'pago_parcial':
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final],  vl_parcial__isnull=False).exclude(tp_pagamento='acordo').order_by('dt_vencimento') 
+            elif tipo_parcela == 'juros':
+                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], tp_pagamento='juros').exclude(tp_pagamento='acordo').order_by('dt_vencimento') 
 
-            # etl = EtlParcelasEmprestimos()
-            # data_etl = etl.execute(emprestimos)           
+            serializer = EmprestimoParcelaMS(parcelas, many=True)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-            return Response(data=emprestimos, status=status.HTTP_200_OK)
-        
         except Exception as error:
             print("Error: ", error)
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
