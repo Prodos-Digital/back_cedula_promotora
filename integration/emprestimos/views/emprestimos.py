@@ -10,6 +10,8 @@ from rest_framework.decorators import action
 import pandas as pd
 from integration.emprestimos.repository.emprestimos import EmprestimosRepository
 from integration.emprestimos.usecases.etl.emprestimos import EtlEmprestimos
+from integration.emprestimos.repository.clientes import ClientesRepository
+from integration.emprestimos.usecases.etl.clientes import HistoricoClienteEmprestimos
 
 class EmprestimosViewSet(viewsets.ModelViewSet):
     queryset = Emprestimo.objects.all()
@@ -130,14 +132,18 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
         
 
     @action(detail=False, methods=['GET'], url_path='historico-cliente')
-    def historico_emprestimo(self, request):  
-        print('Entrou no historico de emprestimo')
-
+    def historico_emprestimo(self, request):
+        print('Entrou no historico')
+     
         try:
             cpf = request.GET.get("cpf", "")
-            emprestimos = Emprestimo.objects.filter(cpf=cpf)
-            serializer = EmprestimoMS(emprestimos, many=True)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            cliente_rep = ClientesRepository()
+            cliente = cliente_rep.get_historico_cliente(cpf)
+
+            etl = HistoricoClienteEmprestimos()
+            data_etl = etl.execute(cliente)  
+
+            return Response(data=data_etl, status=status.HTTP_200_OK)
 
         except Exception as err:
             print("ERROR>>>", err)
