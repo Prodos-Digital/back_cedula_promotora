@@ -54,6 +54,7 @@ class EtlEmprestimos():
                 'indicadores': {
                     "vl_emprestimo": df["vl_emprestimo"].sum(),
                     "vl_capital_giro": df["vl_capital_giro"].sum(),    
+                    "vl_capital_giro_corrente": df["capital_giro_corrente"].sum(),    
                     "qtd_emprestimos": {
                         'total': df["id"].count(),
                         'acordo': contagem_por_status_dict.get('acordo', 0),

@@ -5,20 +5,16 @@ class HistoricoClienteEmprestimos():
 
     def empty_object(self):
         return {
-                    'data': [],
-                    'indicadores': {
-                        "vl_emprestimo": 0,
-                        "vl_capital_giro": 0,
-                        "qtd_emprestimos": {
-                            'total': 0,
-                            'acordo': 0,
-                            'andamento': 0,
-                            'finalizado':0,
-                    },                         
-                }
+                'data': [],   
+                'dados_cliente': [],
+                'indicadores': {
+                     "qtd_tt_emprestimos": 0,
+                      "tt_emprestimos": 0,
+                    }                    
             }
+            
 
-    def execute(self, data):       
+    def execute(self, data, cliente):       
 
         df = pd.DataFrame.from_dict(data)
         pd.set_option('display.expand_frame_repr', False)    
@@ -34,9 +30,10 @@ class HistoricoClienteEmprestimos():
 
         return {
                 'data': df.to_dict('records'),   
+                'dados_cliente': cliente,
                 'indicadores': {
                      "qtd_tt_emprestimos": df["id"].count(),
-                      "tt_emprestimos": tt_emprestimos
+                      "tt_emprestimos": tt_emprestimos,
                 }
             }
 

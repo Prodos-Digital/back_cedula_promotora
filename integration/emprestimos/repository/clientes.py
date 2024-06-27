@@ -26,11 +26,11 @@ class ClientesRepository():
 
         SQL = f"""           
                 SELECT
-                   *
+                    *
                 FROM
-                    emp_emprestimos ee
-                WHERE cpf = '{cpf}' 
-                ORDER BY ee.dt_emprestimo DESC;
+                    emp_clientes ec
+                WHERE
+                    cpf = '{cpf}';
             """   
            
         

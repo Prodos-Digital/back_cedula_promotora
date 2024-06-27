@@ -138,10 +138,11 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
         try:
             cpf = request.GET.get("cpf", "")
             cliente_rep = ClientesRepository()
-            cliente = cliente_rep.get_historico_cliente(cpf)
+            historico_cliente = cliente_rep.get_historico_cliente(cpf)
+            cliente = cliente_rep.get_dados_cliente(cpf)
 
             etl = HistoricoClienteEmprestimos()
-            data_etl = etl.execute(cliente)  
+            data_etl = etl.execute(historico_cliente, cliente)  
 
             return Response(data=data_etl, status=status.HTTP_200_OK)
 
