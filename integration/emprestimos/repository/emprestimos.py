@@ -17,8 +17,7 @@ class EmprestimosRepository():
                     emp_emprestimos ee
                 WHERE ee.{dt_filter} BETWEEN '{dt_inicio}' AND '{dt_final}'
                 ORDER BY ee.{dt_filter} DESC;
-            """   
-           
+            """  
         
         with connection.cursor() as cursor:   
 
@@ -26,4 +25,31 @@ class EmprestimosRepository():
             data = dictfetchall(cursor)
 
         return data if data else []
+    
+    def get_emprestimo_by_id(self, id=None): 
+
+        SQL = f"""           
+               SELECT
+                    ee.*,
+                    (
+                        SELECT json_agg(eep ORDER BY eep.dt_vencimento)
+                        FROM emp_emprestimo_parcelas eep
+                        WHERE eep.emprestimo_id = ee.id
+                    ) AS parcelas
+                FROM
+                    emp_emprestimos ee
+                WHERE ee.id = '{id}';
+            """              
+        
+        with connection.cursor() as cursor:   
+
+            cursor.execute(SQL)
+            data = dictfetchall(cursor)
+
+        return data[0] if data else []
+
+
+
+
+                
   

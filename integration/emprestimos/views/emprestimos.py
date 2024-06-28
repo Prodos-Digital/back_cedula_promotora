@@ -91,11 +91,10 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
         print('Entrou aqui no retrieve de emprestimos ...')
 
         try:
-            emprestimo = Emprestimo.objects.get(id=pk)           
-            #serializer = EmprestimoMS(emprestimo)
-            serializer = EmprestimoMS(instance=emprestimo)
+            emprestimo_repository = EmprestimosRepository()
+            emprestimo = emprestimo_repository.get_emprestimo_by_id(pk)
 
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(data=emprestimo, status=status.HTTP_200_OK)
 
         except Exception as error:
             print("Error: ", error)
@@ -132,8 +131,7 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
         
 
     @action(detail=False, methods=['GET'], url_path='historico-cliente')
-    def historico_emprestimo(self, request):
-        print('Entrou no historico')
+    def historico_emprestimo(self, request):       
      
         try:
             cpf = request.GET.get("cpf", "")
@@ -150,18 +148,3 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
             print("ERROR>>>", err)
             return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)     
         
-
-    @action(detail=False, methods=['GET'], url_path='dashboard')
-    def dashboard_despesas(self, request):  
-        # Endereço API: http://127.0.0.1:8005/integration/despesas/dashboard/
-
-        dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
-        dt_final = request.GET.get("dt_final", datetime.now())
-      
-        try:
-
-            pass
-            
-        except Exception as err:
-            print("ERROR>>>", err)
-            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)

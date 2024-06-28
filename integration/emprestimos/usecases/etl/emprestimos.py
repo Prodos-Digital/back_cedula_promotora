@@ -27,7 +27,6 @@ class EtlEmprestimos():
              return self.empty_object() 
         
         def contar_parcelas(parcelas):
-            print(parcelas)
             pagas = sum(1 for parcela in parcelas if parcela['status_pagamento'] == 'pago' and parcela['tp_pagamento'] == 'parcela')
             nao_pagas = sum(1 for parcela in parcelas if parcela['status_pagamento'] == 'pendente' or parcela['status_pagamento'] == 'pago_parcial')
             return pd.Series([pagas, nao_pagas])
