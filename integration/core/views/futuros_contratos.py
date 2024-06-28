@@ -34,7 +34,8 @@ class FuturoContratoViewSet(viewsets.ModelViewSet):
                         LEFT JOIN bancos b ON fc.banco::INTEGER = b.id                       
                         LEFT JOIN convenios c ON fc.convenio::INTEGER = c.id                        
                         LEFT JOIN operacoes o ON fc.operacao::INTEGER = o.id
-                        WHERE TO_CHAR(fc.dt_efetivacao_emprestimo, 'YYYY-MM-DD') BETWEEN '{dt_inicio}' AND '{dt_final}'                       
+                        WHERE TO_CHAR(fc.dt_efetivacao_emprestimo, 'YYYY-MM-DD') BETWEEN '{dt_inicio}' AND '{dt_final}' 
+                        OR fc.dt_efetivacao_emprestimo IS NULL                     
                         ORDER BY fc.dt_efetivacao_emprestimo DESC;
                     """   
                         

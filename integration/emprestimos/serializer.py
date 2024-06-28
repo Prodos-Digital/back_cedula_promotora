@@ -1,8 +1,22 @@
 from rest_framework import serializers
-from integration.core.models import *
+from integration.emprestimos.models import *
 
-
-class ClienteMS(serializers.ModelSerializer):
+class EmpClienteMS(serializers.ModelSerializer):
     class Meta:
-        model = Cliente 
+        model = EmpCliente 
+        fields = '__all__'
+
+class EmprestimoMS(serializers.ModelSerializer):
+    class Meta:
+        model = Emprestimo 
+        fields = '__all__'
+
+class EmprestimoParcelaMS(serializers.ModelSerializer):
+    class Meta:
+        model = EmprestimoParcela 
+        fields = '__all__'
+
+class AcordoMS(serializers.ModelSerializer):
+    class Meta:
+        model = Acordo 
         fields = '__all__'
