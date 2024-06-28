@@ -7,6 +7,8 @@ from integration.emprestimos.models import Emprestimo, EmprestimoParcela
 from integration.emprestimos.serializer import EmprestimoMS, EmprestimoParcelaMS
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from integration.emprestimos.repository.parcelas import ParcelasEmprestimosRepository
+from integration.emprestimos.usecases.etl.parcelas import EtlParcelasEmprestimos
 
 class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
     queryset = EmprestimoParcela.objects.all()
@@ -15,8 +17,7 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         serializer = super().get_serializer_class()
-        return serializer  
-    
+        return serializer   
             
     def list(self, request):    
 
@@ -25,23 +26,14 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
             dt_final = request.GET.get("dt_final", datetime.now())
             tipo_parcela = request.GET.get("tipo_parcela", "")
 
-            if tipo_parcela == 'todos':
-                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final]).order_by('dt_vencimento') 
-            elif tipo_parcela == 'pendentes':
-                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], dt_pagamento__isnull=True).exclude(tp_pagamento='acordo').order_by('dt_vencimento') 
-            elif tipo_parcela == 'pagos':
-                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], dt_pagamento__isnull=False).exclude(tp_pagamento='acordo').order_by('dt_vencimento') 
-            elif tipo_parcela == 'pago_parcial':
-                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final],  vl_parcial__isnull=False).exclude(tp_pagamento='acordo').order_by('dt_vencimento') 
-            elif tipo_parcela == 'juros':
-                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], tp_pagamento='juros').exclude(tp_pagamento='acordo').order_by('dt_vencimento') 
-            elif tipo_parcela == 'acordos':
-                parcelas = EmprestimoParcela.objects.filter(dt_vencimento__range=[dt_inicio, dt_final], tp_pagamento='acordo').order_by('dt_vencimento') 
+            emprestimo_repository = ParcelasEmprestimosRepository()
+            emprestimos = emprestimo_repository.get_emprestimos_parcelas(dt_inicio, dt_final, tipo_parcela)
 
+            # etl = EtlParcelasEmprestimos()
+            # data_etl = etl.execute(emprestimos)           
 
-            serializer = EmprestimoParcelaMS(parcelas, many=True)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
-
+            return Response(data=emprestimos, status=status.HTTP_200_OK)
+        
         except Exception as error:
             print("Error: ", error)
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
@@ -59,15 +51,15 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
             print("Error: ", error)
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def update(self, request, pk):      
+    def update(self, request, pk):   
+        print('Entrou no update de parcelas')   
 
         try:
-
             data = request.data  
-            
-            if data['tp_pagamento'] == 'vlr_total' or data['tp_pagamento'] == 'parcial':
-                with transaction.atomic():
 
+            if data['tp_pagamento'] == 'vlr_total' or data['tp_pagamento'] == 'parcial':
+
+                with transaction.atomic():
                     emprestimo = Emprestimo.objects.filter(id=data['emprestimo']).first()  
                     parcela = EmprestimoParcela.objects.filter(id=pk).first()
 
@@ -79,6 +71,7 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
                     parcela.status_pagamento =  'pago' if data['tp_pagamento'] == 'vlr_total' else 'pago_parcial'
                     parcela.vl_parcial = None if data['tp_pagamento'] == 'vlr_total' else data['vl_parcial']
                     parcela.dt_prev_pag_parcial_restante = None if data['tp_pagamento'] == 'vlr_total' else data['dt_prev_pag_parcial_restante']
+                    parcela.observacoes = data['observacoes'] if data['observacoes'] else None
                     parcela.save()
                     
             else:
