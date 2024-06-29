@@ -52,7 +52,6 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
             return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, pk):   
-        print('Entrou no update de parcelas')   
 
         try:
             data = request.data  
@@ -64,7 +63,7 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
                     parcela = EmprestimoParcela.objects.filter(id=pk).first()
 
                     if data['tp_pagamento'] == 'vlr_total' and parcela.nr_parcela == parcela.qtd_tt_parcelas:
-                        emprestimo.status = 'finalizado'
+                        emprestimo.status = 'quitado'
                         emprestimo.save()
 
                     parcela.dt_pagamento = data['dt_pagamento']

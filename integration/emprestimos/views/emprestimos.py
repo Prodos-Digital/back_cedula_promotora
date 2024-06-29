@@ -1,3 +1,4 @@
+from rest_framework.decorators import action
 from django.db import transaction
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -6,10 +7,9 @@ from integration.emprestimos.models import Emprestimo, EmprestimoParcela
 from integration.emprestimos.serializer import EmprestimoMS
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from rest_framework.decorators import action
-import pandas as pd
 from integration.emprestimos.repository.emprestimos import EmprestimosRepository
 from integration.emprestimos.usecases.etl.emprestimos import EtlEmprestimos
+from integration.emprestimos.usecases.etl.dash_emprestimos import EtlDashEmprestimos
 from integration.emprestimos.repository.clientes import ClientesRepository
 from integration.emprestimos.usecases.etl.clientes import HistoricoClienteEmprestimos
 
@@ -28,9 +28,10 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
             dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
             dt_final = request.GET.get("dt_final", datetime.now())
             dt_filter = request.GET.get("dt_filter","")
+            has_acordo = request.GET.get("has_acordo","")            
 
             emprestimo_repository = EmprestimosRepository()
-            emprestimos = emprestimo_repository.get_emprestimos(dt_inicio, dt_final, dt_filter)
+            emprestimos = emprestimo_repository.get_emprestimos(dt_inicio, dt_final, dt_filter, has_acordo)
 
             etl = EtlEmprestimos()
             data_etl = etl.execute(emprestimos)           
@@ -89,6 +90,7 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk):            
         print('Entrou aqui no retrieve de emprestimos ...')
+        print(pk)
 
         try:
             emprestimo_repository = EmprestimosRepository()
@@ -131,7 +133,8 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
         
 
     @action(detail=False, methods=['GET'], url_path='historico-cliente')
-    def historico_emprestimo(self, request):       
+    def historico_emprestimo(self, request):      
+        print('Entrou no histórico de cliente') 
      
         try:
             cpf = request.GET.get("cpf", "")
@@ -148,3 +151,25 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
             print("ERROR>>>", err)
             return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)     
         
+        
+    @action(detail=False, methods=['GET'], url_path='dashboard')
+    def historico_emprestimo_dashboard(self, request):       
+     
+        try:
+
+            dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
+            dt_final = request.GET.get("dt_final", datetime.now())
+            dt_filter = request.GET.get("dt_filter","")
+
+           
+            emprestimo_repository = EmprestimosRepository()
+            emprestimos = emprestimo_repository.get_emprestimos_for_dashboard(dt_inicio, dt_final, dt_filter)
+
+            etl = EtlDashEmprestimos()
+            data_etl = etl.execute(emprestimos)  
+
+            return Response(data=data_etl, status=status.HTTP_200_OK)
+
+        except Exception as err:
+            print("ERROR>>>", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)  

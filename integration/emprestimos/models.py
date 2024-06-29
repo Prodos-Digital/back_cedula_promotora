@@ -72,7 +72,7 @@ class Acordo(models.Model):
     nome = models.CharField(max_length=200, null=True, blank=True)
     telefone = models.CharField(max_length=20, null=True, blank=True)
     vl_emprestimo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
-    vl_cobrado = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
+    vl_juros_adicional = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
     dt_acordo = models.DateField(null=True, blank=True)  
     vl_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
     observacoes = models.TextField(null=True, blank=True)
@@ -80,6 +80,7 @@ class Acordo(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     emprestimo_referencia = models.IntegerField(blank=True, null=True)
+    dt_cobranca = models.DateField(null=True, blank=True)  
 
     class Meta:
         managed = False

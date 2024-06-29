@@ -1,5 +1,5 @@
 import pandas as pd
-import json
+
 
 class EtlParcelasEmprestimos():
 
@@ -13,7 +13,7 @@ class EtlParcelasEmprestimos():
                             'total': 0,
                             'acordo': 0,
                             'andamento': 0,
-                            'finalizado':0,
+                            'quitado':0,
                     },                         
                     }
                 }
@@ -36,7 +36,7 @@ class EtlParcelasEmprestimos():
         df["vl_emprestimo"] = df["vl_emprestimo"].astype(float)
         df["vl_capital_giro"] = df["vl_capital_giro"].astype(float)      
 
-        status_filtro = ['acordo', 'finalizado', 'andamento']
+        status_filtro = ['acordo', 'quitado', 'andamento']
         filtered_df = df[df['status'].isin(status_filtro)]
         contagem_por_status = filtered_df.groupby('status').size()
         contagem_por_status_dict = contagem_por_status.to_dict()     
@@ -58,7 +58,7 @@ class EtlParcelasEmprestimos():
                         'total': df["id"].count(),
                         'acordo': contagem_por_status_dict.get('acordo', 0),
                         'andamento': contagem_por_status_dict.get('andamento', 0),
-                        'finalizado': contagem_por_status_dict.get('finalizado', 0),
+                        'quitado': contagem_por_status_dict.get('quitado', 0),
                     },              
                 }
             }
