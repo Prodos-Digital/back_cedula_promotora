@@ -9,12 +9,12 @@ class ParcelasEmprestimosRepository():
         
         if tipo_parcela == 'pendentes':
             QUERY_FILTER = f"""
-            		eep.dt_vencimento BETWEEN '{dt_inicio}' AND '{dt_final}' AND (eep.status_pagamento = 'pendente' OR eep.status_pagamento = 'pago_parcial')
-				    OR (eep.dt_vencimento < '{dt_inicio}' AND (eep.status_pagamento = 'pendente' OR eep.status_pagamento = 'pago_parcial'))
+            		eep.dt_vencimento BETWEEN '{dt_inicio}' AND '{dt_final}' AND (eep.status_pagamento = 'pendente' AND eep.tp_pagamento <> 'acordo' OR eep.status_pagamento = 'pago_parcial')
+				    OR (eep.dt_vencimento < '{dt_inicio}' AND (eep.status_pagamento = 'pendente' AND eep.tp_pagamento <> 'acordo' OR eep.status_pagamento = 'pago_parcial'))
                     """
         elif tipo_parcela == 'pagos':
             QUERY_FILTER = f"""
-					eep.dt_vencimento BETWEEN '{dt_inicio}' AND '{dt_final}' AND eep.status_pagamento = 'pago' AND tp_pagamento <> 'juros'
+					eep.dt_vencimento BETWEEN '{dt_inicio}' AND '{dt_final}' AND eep.status_pagamento = 'pago' AND tp_pagamento <> 'juros' AND eep.tp_pagamento <> 'acordo'
 				    """        
         elif tipo_parcela == 'juros':
             QUERY_FILTER = f"""
@@ -22,7 +22,7 @@ class ParcelasEmprestimosRepository():
             		"""
         elif tipo_parcela == 'todos':
             QUERY_FILTER = f"""
-                    eep.dt_vencimento BETWEEN '{dt_inicio}' AND '{dt_final}'
+                    eep.dt_vencimento BETWEEN '{dt_inicio}' AND '{dt_final}' AND eep.tp_pagamento <> 'acordo'
                     """
 
         SQL = f"""
@@ -31,13 +31,13 @@ class ParcelasEmprestimosRepository():
             FROM
                 emp_emprestimo_parcelas eep
             WHERE
-                {QUERY_FILTER}
+                {QUERY_FILTER} 
             ORDER BY
                 eep.emprestimo_id,
                 eep.nr_parcela DESC;
         """
         
-        #print(SQL)
+        print(SQL)
 
         with connection.cursor() as cursor:   
             cursor.execute(SQL)

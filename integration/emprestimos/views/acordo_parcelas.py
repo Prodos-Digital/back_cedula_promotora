@@ -3,15 +3,15 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import  IsAuthenticated
-from integration.emprestimos.models import Emprestimo, EmprestimoParcela 
-from integration.emprestimos.serializer import EmprestimoMS, EmprestimoParcelaMS
+from integration.emprestimos.models import Acordo, AcordoParcela 
+from integration.emprestimos.serializer import  AcordoParcelaMS
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from integration.emprestimos.repository.parcelas import ParcelasEmprestimosRepository
+from integration.emprestimos.repository.parcelas_acordo import ParcelasAcordoRepository
 
-class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
-    queryset = EmprestimoParcela.objects.all()
-    serializer_class = EmprestimoParcelaMS
+class AcordoParcelasViewSet(viewsets.ModelViewSet):
+    queryset = AcordoParcela.objects.all()
+    serializer_class = AcordoParcelaMS
     permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self):
@@ -25,10 +25,10 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
             dt_final = request.GET.get("dt_final", datetime.now())
             tipo_parcela = request.GET.get("tipo_parcela", "")
 
-            emprestimo_repository = ParcelasEmprestimosRepository()
-            emprestimos = emprestimo_repository.get_emprestimos_parcelas(dt_inicio, dt_final, tipo_parcela)
+            acordo_repository = ParcelasAcordoRepository()
+            acordos = acordo_repository.get_acordos_parcelas(dt_inicio, dt_final, tipo_parcela)        
 
-            return Response(data=emprestimos, status=status.HTTP_200_OK)
+            return Response(data=acordos, status=status.HTTP_200_OK)
         
         except Exception as error:
             print("Error: ", error)
@@ -38,8 +38,8 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
         ''' Aqui é onde lista as parcelas a serem exibidas no modal de detalhes do empréstimo '''
         try:
             
-            parcelas = EmprestimoParcela.objects.filter(emprestimo=pk).order_by('dt_pagamento')           
-            serializer = EmprestimoParcelaMS(parcelas, many=True)
+            parcelas = AcordoParcela.objects.filter(emprestimo=pk).order_by('dt_pagamento')           
+            serializer = AcordoParcelaMS(parcelas, many=True)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -55,12 +55,12 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
             if data['tp_pagamento'] == 'vlr_total' or data['tp_pagamento'] == 'parcial':
 
                 with transaction.atomic():
-                    emprestimo = Emprestimo.objects.filter(id=data['emprestimo']).first()  
-                    parcela = EmprestimoParcela.objects.filter(id=pk).first()
+                    acordo = Acordo.objects.filter(id=data['acordo']).first()  
+                    parcela = AcordoParcela.objects.filter(id=pk).first()
 
                     if data['tp_pagamento'] == 'vlr_total' and parcela.nr_parcela == parcela.qtd_tt_parcelas:
-                        emprestimo.status = 'quitado'
-                        emprestimo.save()
+                        acordo.status = 'quitado'
+                        acordo.save()
 
                     parcela.dt_pagamento = data['dt_pagamento']
                     parcela.status_pagamento =  'pago' if data['tp_pagamento'] == 'vlr_total' else 'pago_parcial'
@@ -69,32 +69,6 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
                     parcela.observacoes = data['observacoes'] if data['observacoes'] else None
                     parcela.save()
                     
-            else:
-                with transaction.atomic():
-                    parcelas = EmprestimoParcela.objects.filter(
-                        emprestimo=data['emprestimo'],
-                        nr_parcela__gte=data['nr_parcela']
-                    )
-                   
-                    parcela_a_copiar = parcelas.first()
-                    
-                    nova_parcela = EmprestimoParcela.objects.create(
-                        emprestimo=parcela_a_copiar.emprestimo,
-                        nr_parcela=None,
-                        dt_vencimento=parcela_a_copiar.dt_vencimento,
-                        dt_pagamento=data['dt_pagamento'],
-                        tp_pagamento='juros',
-                        status_pagamento='pago',
-                        vl_parcial=None,
-                        vl_parcela=None,
-                        dt_prev_pag_parcial_restante=None
-                    )
-
-                    for parcela in parcelas:
-                        due_date = (parcela.dt_vencimento + relativedelta(months=1))                       
-                        parcela.dt_vencimento = due_date
-                        parcela.save()
-
             return Response(data={'message': 'parcela atualizada com sucesso'},status=status.HTTP_200_OK)
 
         except Exception as error:
