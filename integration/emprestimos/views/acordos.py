@@ -3,9 +3,13 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import  IsAuthenticated
-from integration.emprestimos.models import Acordo, Emprestimo, EmprestimoParcela
+from integration.emprestimos.models import Acordo, Emprestimo, EmprestimoParcela, AcordoParcela
 from integration.emprestimos.serializer import AcordoMS
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+from integration.emprestimos.repository.acordos import AcordosRepository
+from integration.emprestimos.usecases.etl.acordos import EtlAcordos
+
 
 class AcordosViewSet(viewsets.ModelViewSet):
     queryset = Acordo.objects.all()
@@ -18,26 +22,32 @@ class AcordosViewSet(viewsets.ModelViewSet):
     
             
     def list(self, request):    
+        print('Entrou no list de acordos...')
 
         try:
-            print('Entrou aqui no list de acordos')
             dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
-            dt_final = request.GET.get("dt_final", datetime.now())           
-           
-            parcelas = Acordo.objects.filter(dt_acordo__range=[dt_inicio, dt_final]).order_by('-dt_acordo') 
-            serializer = AcordoMS(parcelas, many=True)
+            dt_final = request.GET.get("dt_final", datetime.now())
+            dt_filter = request.GET.get("dt_filter","")         
 
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            acordo_repository = AcordosRepository()
+            acordos = acordo_repository.get_acordos(dt_inicio, dt_final, dt_filter)
 
-        except Exception as error:
-            print("Error: ", error)
-            return Response(data={'success': False, 'message': str(error)}, status=status.HTTP_400_BAD_REQUEST)
+            etl = EtlAcordos()
+            data_etl = etl.execute(acordos)           
+
+            return Response(data=data_etl, status=status.HTTP_200_OK)
+
+        except Exception as err:
+            print("ERROR>>>", err)
+            return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)     
 
     def create(self, request):   
+        print('Entrou aqui')
       
         try:
             id_emprestimo = request.GET.get("id_emprestimo")
             data = request.data
+            print(request.data)
 
             with transaction.atomic(): 
                 if id_emprestimo:
@@ -58,7 +68,33 @@ class AcordosViewSet(viewsets.ModelViewSet):
        
                 serializer = AcordoMS(data=data) 
                 if serializer.is_valid():
-                    serializer.save()
+                    acordo = serializer.save()
+
+                    data_emprestimo = datetime.strptime(data['dt_cobranca'], "%Y-%m-%d")
+                    vl_parcela = data['vl_parcela']
+                    installments = []
+
+                    for parcela in range(data['qt_parcela']):
+                            mes_cobranca = parcela + 0
+                            nr_parcela = parcela + 1
+                            due_date = (data_emprestimo + relativedelta(months=mes_cobranca)).date()
+
+                            installment = AcordoParcela(
+                                dt_vencimento=due_date,
+                                nr_parcela=nr_parcela,
+                                dt_pagamento=None,
+                                tp_pagamento="parcela",
+                                status_pagamento="pendente",
+                                vl_parcial=None,
+                                vl_parcela= vl_parcela,
+                                acordo=acordo,
+                                qtd_tt_parcelas=data['qt_parcela']
+                            )
+
+                            installments.append(installment)                    
+
+                    AcordoParcela.objects.bulk_create(installments)
+                    
                     return Response(data=serializer.data, status=status.HTTP_200_OK)
                 else:
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

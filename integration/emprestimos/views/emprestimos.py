@@ -52,7 +52,8 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
 
                 serializer = EmprestimoMS(data=data) 
                 if serializer.is_valid():
-                    emprestimo = serializer.save()                     
+                    emprestimo = serializer.save() 
+                                        
                     data_emprestimo = datetime.strptime(data['dt_cobranca'], "%Y-%m-%d")
                     vl_parcela = data['vl_parcela']
                     installments = []
