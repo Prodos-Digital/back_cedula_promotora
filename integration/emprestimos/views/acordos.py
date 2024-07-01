@@ -106,11 +106,9 @@ class AcordosViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk):     
 
         try:
-            
-            acordo = Acordo.objects.filter(id=pk)           
-            serializer = AcordoMS(acordo, many=True)
+            acordo = AcordosRepository().get_acordo_by_id(pk)
 
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(data=acordo, status=status.HTTP_200_OK)
 
         except Exception as error:
             print("Error: ", error)
