@@ -18,7 +18,7 @@ class AcordoParcelasViewSet(viewsets.ModelViewSet):
         serializer = super().get_serializer_class()
         return serializer   
             
-    def list(self, request):    
+    def list(self, request):            
 
         try:
             dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
@@ -36,9 +36,10 @@ class AcordoParcelasViewSet(viewsets.ModelViewSet):
         
     def retrieve(self, request, pk):     
         ''' Aqui é onde lista as parcelas a serem exibidas no modal de detalhes do empréstimo '''
+
         try:
             
-            parcelas = AcordoParcela.objects.filter(emprestimo=pk).order_by('dt_pagamento')           
+            parcelas = AcordoParcela.objects.filter(acordo=pk).order_by('dt_vencimento')           
             serializer = AcordoParcelaMS(parcelas, many=True)
 
             return Response(data=serializer.data, status=status.HTTP_200_OK)
