@@ -89,10 +89,8 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
             return Response(data={'success': False, 'message': str(err)}, status=status.HTTP_400_BAD_REQUEST)
         
 
-    def retrieve(self, request, pk):            
-        print('Entrou aqui no retrieve de emprestimos ...')
-        print(pk)
-
+    def retrieve(self, request, pk):           
+      
         try:
             emprestimo_repository = EmprestimosRepository()
             emprestimo = emprestimo_repository.get_emprestimo_by_id(pk)

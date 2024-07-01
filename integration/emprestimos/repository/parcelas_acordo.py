@@ -24,9 +24,12 @@ class ParcelasAcordoRepository():
 
         SQL = f"""
             SELECT
-                DISTINCT ON (eep.acordo_id) eep.*
+                DISTINCT ON (eep.acordo_id) eep.*, ea.nome
             FROM
                 emp_acordo_parcelas eep
+             LEFT JOIN
+			    emp_acordos ea 
+			    ON eep.acordo_id = ea.id
             WHERE
                 {QUERY_FILTER} 
             ORDER BY

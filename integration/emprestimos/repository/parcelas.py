@@ -27,9 +27,12 @@ class ParcelasEmprestimosRepository():
 
         SQL = f"""
             SELECT
-                DISTINCT ON (eep.emprestimo_id) eep.*
+                DISTINCT ON (eep.emprestimo_id) eep.*, ee.nome
             FROM
                 emp_emprestimo_parcelas eep
+            LEFT JOIN
+			    emp_emprestimos ee 
+			    ON eep.emprestimo_id = ee.id
             WHERE
                 {QUERY_FILTER} 
             ORDER BY
