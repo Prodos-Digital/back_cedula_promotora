@@ -11,6 +11,7 @@ from integration.emprestimos.repository.emprestimos import EmprestimosRepository
 from integration.emprestimos.usecases.etl.emprestimos import EtlEmprestimos
 from integration.emprestimos.usecases.etl.dash_emprestimos import EtlDashEmprestimos
 from integration.emprestimos.repository.clientes import ClientesRepository
+from integration.emprestimos.repository.acordos import AcordosRepository
 from integration.emprestimos.usecases.etl.clientes import HistoricoClienteEmprestimos
 
 class EmprestimosViewSet(viewsets.ModelViewSet):
@@ -158,14 +159,15 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
 
             dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
             dt_final = request.GET.get("dt_final", datetime.now())
-            dt_filter = request.GET.get("dt_filter","")
-
            
             emprestimo_repository = EmprestimosRepository()
-            emprestimos = emprestimo_repository.get_emprestimos_for_dashboard(dt_inicio, dt_final, dt_filter)
+            emprestimos = emprestimo_repository.get_emprestimos_for_dashboard(dt_inicio, dt_final)
+
+            acordo_repository = AcordosRepository()
+            acordos = acordo_repository.get_acordos_for_dashboard(dt_inicio, dt_final)
 
             etl = EtlDashEmprestimos()
-            data_etl = etl.execute(emprestimos)  
+            data_etl = etl.execute(emprestimos, acordos)  
 
             return Response(data=data_etl, status=status.HTTP_200_OK)
 
