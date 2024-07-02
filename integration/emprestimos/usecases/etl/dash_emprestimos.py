@@ -62,6 +62,9 @@ class EtlDashEmprestimos():
    
         #breakpoint()
 
+        # filtro por status
+        
+
         return {
                 # 'emprestimos': emprestimos,
                 # 'acordos':  acordos,
