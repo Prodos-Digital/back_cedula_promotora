@@ -50,7 +50,8 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
     def update(self, request, pk):   
 
         try:
-            data = request.data  
+            data = request.data
+            print(data)
 
             if data['tp_pagamento'] == 'vlr_total' or data['tp_pagamento'] == 'parcial':
 

@@ -63,7 +63,7 @@ class EmprestimosRepository():
                     ) AS parcelas
                 FROM
                     emp_emprestimos ee
-                WHERE ee.{dt_filter} BETWEEN '{dt_inicio}' AND '{dt_final}';
+                WHERE ee.dt_emprestimo BETWEEN '{dt_inicio}' AND '{dt_final}';
             """  
         
         with connection.cursor() as cursor:   
