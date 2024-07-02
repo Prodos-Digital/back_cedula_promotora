@@ -54,7 +54,7 @@ class EtlEmprestimos():
         
         df[['parcelas_pagas', 'parcelas_nao_pagas']] = df['parcelas'].apply(contar_parcelas)
         df['capital_giro_corrente'] = df.apply(lambda row: round(row['vl_capital_giro'] * row['parcelas_nao_pagas'], 2) if row['parcelas_nao_pagas'] > 0 else 0, axis=1)
-        print(df[['vl_capital_giro','parcelas_pagas','parcelas_nao_pagas','capital_giro_corrente']])    
+        #print(df[['vl_capital_giro','parcelas_pagas','parcelas_nao_pagas','capital_giro_corrente']])    
         #breakpoint()
 
         return {
