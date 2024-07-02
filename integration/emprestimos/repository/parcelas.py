@@ -25,24 +25,6 @@ class ParcelasEmprestimosRepository():
             QUERY_FILTER = f"""
                     AND eep.tp_pagamento <> 'acordo'
                     """
-            
-          
-
-        _SQL = f"""
-                    SELECT
-                         DISTINCT ON (eep.emprestimo_id) eep.*, ee.nome
-                     FROM
-                         emp_emprestimo_parcelas eep
-                     LEFT JOIN
-                         emp_emprestimos ee 
-                         ON eep.emprestimo_id = ee.id
-                     WHERE
-                        eep.dt_vencimento BETWEEN '{dt_inicio}' AND '{dt_final}'
-                         {QUERY_FILTER} 
-                     ORDER BY
-                         eep.emprestimo_id,
-                         eep.nr_parcela DESC;
-        """
 
         SQL = f"""   
                 DROP TABLE IF EXISTS temp_cobrancas_emprestimos;
@@ -71,8 +53,8 @@ class ParcelasEmprestimosRepository():
                         ee.nome,
                         CASE
                             WHEN eep.dt_vencimento = current_date THEN 2    
-                            WHEN eep.dt_vencimento < current_date THEN 3
-                            WHEN eep.dt_vencimento > current_date THEN 1
+                            WHEN eep.dt_vencimento < current_date THEN 1
+                            WHEN eep.dt_vencimento > current_date THEN 3
                         END AS situacao_prazo
                     FROM
                         emp_emprestimo_parcelas eep
@@ -88,7 +70,7 @@ class ParcelasEmprestimosRepository():
 
                 SELECT *
 				FROM temp_cobrancas_emprestimos
-				ORDER BY situacao_prazo desc;
+				ORDER BY situacao_prazo, dt_vencimento asc;
        
         """
         
