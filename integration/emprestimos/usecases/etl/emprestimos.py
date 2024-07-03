@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 class EtlEmprestimos():
 
     def empty_object(self):
