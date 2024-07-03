@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+
 
 class EtlDashEmprestimos():
 
@@ -70,7 +72,7 @@ class EtlDashEmprestimos():
                 # 'acordos':  acordos,
                 'indicadores':{
                     'emprestimos': {
-                        'total': df_acordos["id"].count(),                        
+                        'total': df_emprestimos["id"].count(),                        
                         'andamento': contagem_por_status_emprestimos_dict.get('andamento', 0),
                         'acordo': contagem_por_status_emprestimos_dict.get('acordo', 0),
                         'quitado': contagem_por_status_emprestimos_dict.get('quitado', 0),  
