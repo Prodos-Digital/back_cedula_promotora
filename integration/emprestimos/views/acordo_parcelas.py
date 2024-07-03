@@ -6,8 +6,9 @@ from rest_framework.permissions import  IsAuthenticated
 from integration.emprestimos.models import Acordo, AcordoParcela 
 from integration.emprestimos.serializer import  AcordoParcelaMS
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 from integration.emprestimos.repository.parcelas_acordo import ParcelasAcordoRepository
+from integration.emprestimos.usecases.etl.parcelas_acordos import EtlParcelasAcordos
+
 
 class AcordoParcelasViewSet(viewsets.ModelViewSet):
     queryset = AcordoParcela.objects.all()
@@ -26,9 +27,12 @@ class AcordoParcelasViewSet(viewsets.ModelViewSet):
             tipo_parcela = request.GET.get("tipo_parcela", "")
 
             acordo_repository = ParcelasAcordoRepository()
-            acordos = acordo_repository.get_acordos_parcelas(dt_inicio, dt_final, tipo_parcela)        
+            acordos = acordo_repository.get_acordos_parcelas(dt_inicio, dt_final, tipo_parcela)     
 
-            return Response(data=acordos, status=status.HTTP_200_OK)
+            etl = EtlParcelasAcordos()
+            data_etl = etl.execute(acordos)  
+
+            return Response(data=data_etl, status=status.HTTP_200_OK)
         
         except Exception as error:
             print("Error: ", error)

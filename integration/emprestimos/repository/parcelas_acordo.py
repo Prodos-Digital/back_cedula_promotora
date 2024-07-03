@@ -43,6 +43,8 @@ class ParcelasAcordoRepository():
                         eep.dt_prev_pag_parcial_restante,
                         eep.observacoes,
                         ee.nome,
+                        ee.vl_juros_adicional,
+                        ee.vl_capital_giro,
                         CASE
                             WHEN eep.dt_vencimento = current_date THEN 2    
                             WHEN eep.dt_vencimento < current_date THEN 1
