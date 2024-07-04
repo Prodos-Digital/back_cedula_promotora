@@ -161,10 +161,10 @@ class EmprestimosViewSet(viewsets.ModelViewSet):
             dt_final = request.GET.get("dt_final", datetime.now())
            
             emprestimo_repository = EmprestimosRepository()
-            emprestimos = emprestimo_repository.get_emprestimos_for_dashboard(dt_inicio, dt_final)
+            emprestimos = emprestimo_repository.get_emprestimos_for_dashboard()
 
             acordo_repository = AcordosRepository()
-            acordos = acordo_repository.get_acordos_for_dashboard(dt_inicio, dt_final)
+            acordos = acordo_repository.get_acordos_for_dashboard()
 
             etl = EtlDashEmprestimos()
             data_etl = etl.execute(emprestimos, acordos)  
