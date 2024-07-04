@@ -1,6 +1,4 @@
 import pandas as pd
-import numpy as np
-
 
 class EtlDashEmprestimos():
 
@@ -24,7 +22,7 @@ class EtlDashEmprestimos():
                         'vl_capital_giro_corrente': 0                       
                     }
                 }     
-                }
+            }
 
     def execute(self, emprestimos, acordos):       
 
@@ -40,11 +38,6 @@ class EtlDashEmprestimos():
             nao_pagas = sum(1 for parcela in parcelas if parcela['status_pagamento'] == 'pendente' or parcela['status_pagamento'] == 'pago_parcial')
             return pd.Series([pagas, nao_pagas])
 
-
-        '''
-        capital de giro
-        
-        '''
         status_filtro = ['quitado', 'andamento', 'acordo']
 
         # CONTADORES DOS EMPRÉSTIMOS
@@ -63,7 +56,7 @@ class EtlDashEmprestimos():
         df_acordos["vl_juros_adicional"] = df_acordos["vl_juros_adicional"].astype(float)
         df_acordos["vl_cobrado"] = df_acordos["vl_emprestimo"] + df_acordos["vl_juros_adicional"]
         df_acordos[['parcelas_pagas', 'parcelas_nao_pagas']] = df_acordos['parcelas'].apply(contar_parcelas)
-        df_acordos['capital_giro_corrente'] = df_acordos.apply(lambda row: round(row['vl_capital_giro'] * row['parcelas_nao_pagas'], 2) if row['parcelas_nao_pagas'] > 0 else 0, axis=1)
+        df_acordos['capital_giro_corrente'] = df_acordos['vl_emprestimo'] + df_acordos['vl_juros_adicional'] 
 
         filtered_df_acordos = df_acordos[df_acordos['status'].isin(status_filtro)]
         contagem_por_status_acordos = filtered_df_acordos.groupby('status').size()
@@ -71,12 +64,9 @@ class EtlDashEmprestimos():
    
         #breakpoint()
 
-        # filtro por status
-        
+        # filtro por status        
 
-        return {
-                # 'emprestimos': emprestimos,
-                # 'acordos':  acordos,
+        return {                             
                 'indicadores':{
                     'emprestimos': {
                         'total': df_emprestimos["id"].count(),                        

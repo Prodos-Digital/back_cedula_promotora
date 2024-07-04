@@ -62,8 +62,7 @@ class EmprestimosRepository():
                         WHERE eep.emprestimo_id = ee.id
                     ) AS parcelas
                 FROM
-                    emp_emprestimos ee
-                WHERE ee.dt_emprestimo BETWEEN '{dt_inicio}' AND '{dt_final}';
+                    emp_emprestimos ee ;
             """  
         
         with connection.cursor() as cursor:   

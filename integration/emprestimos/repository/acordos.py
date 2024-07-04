@@ -48,7 +48,7 @@ class AcordosRepository():
 
         return data[0] if data else []
     
-    def get_acordos_for_dashboard(self, dt_inicio=None, dt_final=None): 
+    def get_acordos_for_dashboard(self): 
 
         SQL = f""" 
                 SELECT
@@ -59,8 +59,7 @@ class AcordosRepository():
                         WHERE eep.acordo_id = ea.id
                     ) AS parcelas
                 FROM
-                    emp_acordos ea
-                WHERE ea.dt_acordo BETWEEN '{dt_inicio}' AND '{dt_final}';
+                    emp_acordos ea ;
             """              
 
         with connection.cursor() as cursor:   
