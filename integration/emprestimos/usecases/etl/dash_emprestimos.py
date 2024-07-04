@@ -6,17 +6,24 @@ class EtlDashEmprestimos():
 
     def empty_object(self):
         return {
-                    'data': [],
-                    'indicadores': {
-                        "vl_emprestimo": 0,
-                        "vl_capital_giro": 0,
-                        "qtd_emprestimos": {
-                            'total': 0,
-                            'acordo': 0,
-                            'andamento': 0,
-                            'quitado':0,
-                    },                         
+                  'indicadores':{
+                    'emprestimos': {
+                        'total': 0,                        
+                        'andamento': 0,
+                        'acordo': 0,
+                        'quitado': 0,  
+                        'parcelas_pagas': 0,
+                        'parcelas_nao_pagas': 0,
+                        'vl_capital_giro': 0,
+                        'vl_capital_giro_corrente': 0            
+                    },
+                    'acordos': {
+                        'total': 0,                        
+                        'andamento': 0,
+                        'quitado': 0, 
+                        'vl_capital_giro_corrente': 0                       
                     }
+                }     
                 }
 
     def execute(self, emprestimos, acordos):       
@@ -76,13 +83,22 @@ class EtlDashEmprestimos():
                         'andamento': contagem_por_status_emprestimos_dict.get('andamento', 0),
                         'acordo': contagem_por_status_emprestimos_dict.get('acordo', 0),
                         'quitado': contagem_por_status_emprestimos_dict.get('quitado', 0),  
-                        'vl_capital_giro_corrente': df_emprestimos['capital_giro_corrente'].sum()            
+                        'parcelas_pagas': df_emprestimos["parcelas_pagas"].sum(),
+                        'parcelas_nao_pagas': df_emprestimos["parcelas_nao_pagas"].sum(),
+                        'vl_capital_giro': df_emprestimos["vl_capital_giro"].sum(),
+                        'vl_capital_giro_corrente': df_emprestimos['capital_giro_corrente'].sum(),
+                        'vl_emprestimo': df_emprestimos['vl_emprestimo'].sum(),
+                        'vl_juros': df_emprestimos['vl_juros'].sum()           
                     },
                     'acordos': {
                         'total': df_acordos["id"].count(),                        
                         'andamento': contagem_por_status_acordos_dict.get('andamento', 0),
                         'quitado': contagem_por_status_acordos_dict.get('quitado', 0), 
-                        'vl_capital_giro_corrente': df_acordos['capital_giro_corrente'].sum()                       
+                        'parcelas_pagas': df_acordos["parcelas_pagas"].sum(),
+                        'parcelas_nao_pagas': df_acordos["parcelas_nao_pagas"].sum(),
+                        'vl_capital_giro_corrente': df_acordos['capital_giro_corrente'].sum(),
+                        'vl_emprestimo': df_acordos['vl_emprestimo'].sum(),   
+                        'vl_juros_adicional': df_acordos['vl_juros_adicional'].sum(),                            
                     }
                 }            
             }
