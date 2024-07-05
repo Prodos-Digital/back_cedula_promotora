@@ -8,6 +8,7 @@ from integration.emprestimos.serializer import EmprestimoMS, EmprestimoParcelaMS
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from integration.emprestimos.repository.parcelas import ParcelasEmprestimosRepository
+from integration.emprestimos.usecases.etl.parcelas_emprestimos import EtlParcelasEmprestimos
 
 class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
     queryset = EmprestimoParcela.objects.all()
@@ -28,7 +29,10 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
             emprestimo_repository = ParcelasEmprestimosRepository()
             emprestimos = emprestimo_repository.get_emprestimos_parcelas(dt_inicio, dt_final, tipo_parcela)
 
-            return Response(data=emprestimos, status=status.HTTP_200_OK)
+            etl = EtlParcelasEmprestimos()
+            data_etl = etl.execute(emprestimos)
+
+            return Response(data=data_etl, status=status.HTTP_200_OK)
         
         except Exception as error:
             print("Error: ", error)
@@ -50,7 +54,8 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
     def update(self, request, pk):   
 
         try:
-            data = request.data  
+            data = request.data
+            print(data)
 
             if data['tp_pagamento'] == 'vlr_total' or data['tp_pagamento'] == 'parcial':
 

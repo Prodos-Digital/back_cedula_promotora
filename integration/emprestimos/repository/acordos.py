@@ -47,3 +47,24 @@ class AcordosRepository():
             data = dictfetchall(cursor)
 
         return data[0] if data else []
+    
+    def get_acordos_for_dashboard(self): 
+
+        SQL = f""" 
+                SELECT
+                    ea.*,
+                    (
+                        SELECT json_agg(eep ORDER BY eep.dt_vencimento)
+                        FROM emp_acordo_parcelas eep
+                        WHERE eep.acordo_id = ea.id
+                    ) AS parcelas
+                FROM
+                    emp_acordos ea ;
+            """              
+
+        with connection.cursor() as cursor:   
+
+            cursor.execute(SQL)
+            data = dictfetchall(cursor)
+
+        return data if data else []

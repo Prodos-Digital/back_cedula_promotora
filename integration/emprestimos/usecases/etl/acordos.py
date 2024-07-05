@@ -51,7 +51,7 @@ class EtlAcordos():
         #breakpoint()
 
         return {
-                'data': data,
+                'data': df.to_dict('records'),
                 'indicadores': {
                     "vl_emprestimo": df["vl_emprestimo"].sum(),
                     "vl_tt_juros_adicional": df["vl_juros_adicional"].sum(),    
