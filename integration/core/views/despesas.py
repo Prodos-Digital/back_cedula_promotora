@@ -30,20 +30,32 @@ class DespesasViewSet(viewsets.ModelViewSet):
 
             depesas_repository = DespesasRepository()
             despesas = depesas_repository.get_despesas(dt_inicio, dt_final)
-            
-            df = pd.DataFrame(despesas)            
 
+            contratos = Contrato.objects.filter(dt_pag_cliente__range=[dt_inicio, dt_final]).order_by('dt_pag_cliente')
+
+            df = pd.DataFrame(despesas)  
+            df_contratos = pd.DataFrame(contratos)
+
+            if df_contratos.empty:
+                df_contratos = pd.DataFrame(columns=['id','vl_comissao']) 
+           
             if df.empty:
+                df = pd.DataFrame(columns=['id','dt_vencimento','descricao','valor','situacao','tp_despesa','natureza_despesa','id_loja']) 
+
+            if df.empty and df_contratos.empty:
                 data = {
                     'data': [],
                     'indicadores': {
                         "pago": 0, 
                         "pendente": 0, 
-                        "total": 0
+                        "total": 0,
+                        'qtd_tt_comissao': 0,
+                        'vl_tt_comissao': 0
                     }
                 }
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
            
+            df_contratos["vl_comissao"] = df_contratos["vl_comissao"].astype(float)
 
             df["valor"] = df["valor"].astype(float)
             soma_por_situacao = df.groupby("situacao")["valor"].sum().reset_index()
@@ -54,9 +66,13 @@ class DespesasViewSet(viewsets.ModelViewSet):
                 'indicadores': {
                     "pago": soma_por_situacao_dict.get("pago", 0), 
                     "pendente": soma_por_situacao_dict.get("pendente", 0), 
-                    "total": df["valor"].sum()
+                    "total": df["valor"].sum(),
+                    'qtd_tt_comissao': df_contratos["id"].sum(),
+                    'vl_tt_comissao': df_contratos["vl_comissao"].sum()
                 }
             }
+
+            print(data)
 
             return Response(data=data, status=status.HTTP_200_OK)
 

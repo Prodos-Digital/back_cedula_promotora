@@ -63,6 +63,11 @@ class BancoMS(serializers.ModelSerializer):
         model = Banco 
         fields = '__all__'
 
+class CanalAquisicaoClienteMS(serializers.ModelSerializer):
+    class Meta:
+        model = CanalAquisicaoCliente 
+        fields = '__all__'
+
 class CorretorMS(serializers.ModelSerializer):
     class Meta:
         model = Corretor 
