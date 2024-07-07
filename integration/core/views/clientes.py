@@ -21,9 +21,10 @@ class ClientesViewSet(viewsets.ModelViewSet):
     def list(self, request):
 
         try:
-                  
+            user_id = request.GET.get("user_id", "")
+
             clientes_rep = ClientesRepository()
-            clientes = clientes_rep.get_clientes()      
+            clientes = clientes_rep.get_clientes(user_id)      
 
             return Response(data=clientes, status=status.HTTP_200_OK)
 

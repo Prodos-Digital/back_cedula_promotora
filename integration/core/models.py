@@ -8,10 +8,12 @@ class Cliente(models.Model):
     especie = models.CharField(max_length=100, null=True, blank=True)
     matricula = models.CharField(max_length=20, null=True, blank=True)
     telefone1 = models.CharField(max_length=20, null=True, blank=True)
-    telefone2 = models.CharField(max_length=20, null=True, blank=True)
-    telefone3 = models.CharField(max_length=20, null=True, blank=True)
+    telefone2 = models.CharField(max_length=20, null=True, blank=True)   
     observacoes = models.TextField(null=True, blank=True)
     convenio = models.CharField(max_length=100, null=True, blank=True)
+    senha = models.CharField(max_length=60, null=True, blank=True)
+    created_by_user_id = models.IntegerField(null=True, blank=True)
+    canal_aquisicao = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
         managed = False
@@ -144,6 +146,15 @@ class NaturezaDespesa(models.Model):
     class Meta:
         managed = False
         db_table = 'natureza_despesas'
+
+class CanalAquisicaoCliente(models.Model):
+    id = models.BigAutoField(primary_key=True) 
+    name = models.CharField(max_length=50, blank=True, null=True)
+    is_active = models.BooleanField(default=True, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'canal_aquisicao_clientes'
 
 class PreContrato(models.Model):
     id = models.BigAutoField(primary_key=True)    
