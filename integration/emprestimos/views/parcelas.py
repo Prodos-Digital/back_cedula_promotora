@@ -98,6 +98,14 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
                     for parcela in parcelas:
                         due_date = (parcela.dt_vencimento + relativedelta(months=1))                       
                         parcela.dt_vencimento = due_date
+                        
+                        if parcela.status_pagamento == 'pago_parcial':
+                            parcela.status_pagamento = 'pendente'
+                            parcela.dt_pagamento = None
+                            parcela.dt_prev_pag_parcial_restante = None
+                            parcela.vl_parcial = None
+                            parcela.observacoes = None
+
                         parcela.save()
 
             return Response(data={'message': 'parcela atualizada com sucesso'},status=status.HTTP_200_OK)
