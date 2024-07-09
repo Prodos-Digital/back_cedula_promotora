@@ -45,9 +45,9 @@ class PreContratosViewSet(viewsets.ModelViewSet):
                         LEFT JOIN convenios c ON pc.convenio::INTEGER = c.id
                         LEFT JOIN corretores co ON pc.corretor ::INTEGER = co.id
                         LEFT JOIN operacoes o ON pc.operacao::INTEGER = o.id
-                        WHERE TO_CHAR(pc.created_at, 'YYYY-MM-DD') BETWEEN '{dt_inicio}' AND '{dt_final}'
+                        WHERE pc.dt_pag_cliente BETWEEN '{dt_inicio}' AND '{dt_final}'
                         {FILTER_USER_ID}
-                        ORDER BY pc.dt_pag_cliente  DESC;
+                        ORDER BY pc.dt_pag_cliente DESC;
                     """               
             
             pre_contratos = PreContrato.objects.raw(QUERY)              
