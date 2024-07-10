@@ -31,17 +31,18 @@ class DespesasViewSet(viewsets.ModelViewSet):
             depesas_repository = DespesasRepository()
             despesas = depesas_repository.get_despesas(dt_inicio, dt_final)
 
-            contratos = Contrato.objects.filter(dt_pag_cliente__range=[dt_inicio, dt_final]).order_by('dt_pag_cliente')
+            contratos = depesas_repository.get_comissoes(dt_inicio, dt_final)        
 
-            df = pd.DataFrame(despesas)  
-            df_contratos = pd.DataFrame(contratos)
+            df = pd.DataFrame.from_dict(despesas)
+            df_contratos = pd.DataFrame.from_dict(contratos)
+            pd.set_option('display.expand_frame_repr', False)   
 
             if df_contratos.empty:
-                df_contratos = pd.DataFrame(columns=['id','vl_comissao']) 
-           
-            if df.empty:
-                df = pd.DataFrame(columns=['id','dt_vencimento','descricao','valor','situacao','tp_despesa','natureza_despesa','id_loja']) 
+                df_contratos = pd.DataFrame({'id': [], 'vl_comissao': []})
 
+            if df.empty:
+                df = pd.DataFrame({'id': [], 'dt_vencimento': [], 'descricao': [], 'valor': [], 'situacao': [], 'tp_despesa': [], 'natureza_despesa': [], 'id_loja': []})
+          
             if df.empty and df_contratos.empty:
                 data = {
                     'data': [],
@@ -54,25 +55,26 @@ class DespesasViewSet(viewsets.ModelViewSet):
                     }
                 }
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-           
-            df_contratos["vl_comissao"] = df_contratos["vl_comissao"].astype(float)
 
-            df["valor"] = df["valor"].astype(float)
+            if not df_contratos.empty:
+                df_contratos["vl_comissao"] = df_contratos["vl_comissao"].astype(float)
+
+            if not df.empty:
+                df["valor"] = df["valor"].astype(float)
+
             soma_por_situacao = df.groupby("situacao")["valor"].sum().reset_index()
             soma_por_situacao_dict = dict(zip(soma_por_situacao["situacao"], soma_por_situacao["valor"]))
-
+           
             data = {
                 'data': despesas,
                 'indicadores': {
                     "pago": soma_por_situacao_dict.get("pago", 0), 
                     "pendente": soma_por_situacao_dict.get("pendente", 0), 
                     "total": df["valor"].sum(),
-                    'qtd_tt_comissao': df_contratos["id"].sum(),
+                    'qtd_tt_comissao': df_contratos["id"].count(),
                     'vl_tt_comissao': df_contratos["vl_comissao"].sum()
                 }
             }
-
-            print(data)
 
             return Response(data=data, status=status.HTTP_200_OK)
 
