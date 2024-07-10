@@ -29,4 +29,25 @@ class DespesasRepository():
             data = dictfetchall(cursor)
 
         return data if data else []
+
+    def get_comissoes(self, dt_inicio=None, dt_final=None): 
+
+        SQL = f"""           
+            SELECT
+               *
+            FROM
+                core_contrato cc            
+            WHERE cc.dt_pag_cliente BETWEEN '{dt_inicio}' AND '{dt_final}'           
+            ORDER BY dt_pag_cliente DESC;
+        """     
+
+        print(SQL)
+
+        with connection.cursor() as cursor:   
+
+            cursor.execute(SQL)
+            data = dictfetchall(cursor)
+
+        return data if data else []    
+    
   
