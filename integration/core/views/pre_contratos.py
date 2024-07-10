@@ -23,6 +23,7 @@ class PreContratosViewSet(viewsets.ModelViewSet):
         dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
         dt_final = request.GET.get("dt_final", datetime.now())
         user_id = request.GET.get("user_id", "")
+        has_contrato = request.GET.get("has_contrato", "")        
 
         user = User.objects.get(id=user_id)
 
@@ -30,6 +31,13 @@ class PreContratosViewSet(viewsets.ModelViewSet):
             FILTER_USER_ID = ""
         else:
             FILTER_USER_ID = f"""AND pc.user_id_created = {user_id}""" if user_id else ""
+
+        if has_contrato == 'nao_transmitidos':
+            FILTER_HAS_CONTRATO = " AND pc.contrato_criado = FALSE"
+        elif has_contrato == 'transmitidos':
+            FILTER_HAS_CONTRATO = " AND pc.contrato_criado = TRUE"
+        else:
+            FILTER_HAS_CONTRATO = ""
 
         try:        
             QUERY = f"""
@@ -47,8 +55,10 @@ class PreContratosViewSet(viewsets.ModelViewSet):
                         LEFT JOIN operacoes o ON pc.operacao::INTEGER = o.id
                         WHERE pc.dt_pag_cliente BETWEEN '{dt_inicio}' AND '{dt_final}'
                         {FILTER_USER_ID}
+                        {FILTER_HAS_CONTRATO}
                         ORDER BY pc.dt_pag_cliente DESC;
-                    """               
+                    """    
+            print(QUERY)           
             
             pre_contratos = PreContrato.objects.raw(QUERY)              
             serializer = PreContratoRelatorioMS(pre_contratos, many=True)
