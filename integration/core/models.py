@@ -45,6 +45,7 @@ class Contrato(models.Model):
     iletrado = models.BooleanField(blank=True, null=True)
     documento_salvo = models.BooleanField(blank=True, null=True) 
     representante_legal = models.BooleanField(blank=True, null=True)
+    id_pre_contrato = models.IntegerField(null=True, blank=True)
     
     class Meta:
         managed = False
