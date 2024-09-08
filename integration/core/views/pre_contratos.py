@@ -141,9 +141,14 @@ class PreContratosViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'], url_path="send-to-contrato")
     def send_to_contrato(self, request): 
 
-        data = request.data       
+        data = request.data    
+        contrato = Contrato.objects.filter(id=data['id_pre_contrato']).first()  
+
+        if contrato:
+            return Response(data={'message': 'já transmitido'},status=status.HTTP_409_CONFLICT)
 
         try:    
+
             with transaction.atomic():
                 pre_contrato = PreContrato.objects.filter(id=request.data['id']).first()
 
