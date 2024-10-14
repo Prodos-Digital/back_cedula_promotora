@@ -2,12 +2,14 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from integration.core.models import PreContrato, Contrato
 from integration.users.models import User
 from integration.core.serializer import PreContratoMS, PreContratoRelatorioMS, ContratoMS
 from datetime import datetime, timedelta
 from django.db import transaction
+from integration.core.repository.pre_contratos import PreContratosRepository
+from integration.core.usecases.pre_contratos import EtlApuracaoPreContratos
 
 class PreContratosViewSet(viewsets.ModelViewSet):
     queryset = PreContrato.objects.all()
@@ -18,12 +20,24 @@ class PreContratosViewSet(viewsets.ModelViewSet):
         serializer = super().get_serializer_class()
         return serializer
 
-    def list(self, request):    
+    def list(self, request):          
 
         dt_inicio = request.GET.get("dt_inicio", datetime.now() - timedelta(days=1))
         dt_final = request.GET.get("dt_final", datetime.now())
         user_id = request.GET.get("user_id", "")
-        has_contrato = request.GET.get("has_contrato", "")        
+        has_contrato = request.GET.get("has_contrato", "")     
+
+        convenios_query = request.GET.get("convenios", None) if request.GET.get("convenios") else ""
+        bancos_query = request.GET.get("bancos", None) if request.GET.get("bancos") else ""
+        promotoras_query = request.GET.get("promotoras", None) if request.GET.get("promotoras") else ""
+        corretores_query = request.GET.get("corretores", None) if request.GET.get("corretores") else ""
+        operacoes_query = request.GET.get("operacoes", None) if request.GET.get("operacoes") else ""
+
+        convenios = tuple(convenios_query.split(',')) if len(convenios_query.split(',')) > 1 else convenios_query 
+        bancos = tuple(bancos_query.split(',')) if len(bancos_query.split(',')) > 1 else bancos_query 
+        promotoras = tuple(promotoras_query.split(',')) if len(promotoras_query.split(',')) > 1 else promotoras_query 
+        corretores = tuple(corretores_query.split(',')) if len(corretores_query.split(',')) > 1 else corretores_query 
+        operacoes = tuple(operacoes_query.split(',')) if len(operacoes_query.split(',')) > 1 else operacoes_query 
 
         user = User.objects.get(id=user_id)
 
@@ -32,38 +46,15 @@ class PreContratosViewSet(viewsets.ModelViewSet):
         else:
             FILTER_USER_ID = f"""AND pc.user_id_created = {user_id}""" if user_id else ""
 
-        if has_contrato == 'nao_transmitidos':
-            FILTER_HAS_CONTRATO = " AND pc.contrato_criado = FALSE"
-        elif has_contrato == 'transmitidos':
-            FILTER_HAS_CONTRATO = " AND pc.contrato_criado = TRUE"
-        else:
-            FILTER_HAS_CONTRATO = ""
-
         try:        
-            QUERY = f"""
-                        SELECT pc.*, 
-                            b.name AS "nome_banco", 
-                            p.name AS "nome_promotora", 
-                            c.name AS "nome_convenio",
-                            co.name AS "nome_corretor",
-                            o.name AS "nome_operacao"
-                        FROM pre_contratos pc 
-                        LEFT JOIN bancos b ON pc.banco::INTEGER = b.id
-                        LEFT JOIN promotoras p ON pc.promotora::INTEGER = p.id
-                        LEFT JOIN convenios c ON pc.convenio::INTEGER = c.id
-                        LEFT JOIN corretores co ON pc.corretor ::INTEGER = co.id
-                        LEFT JOIN operacoes o ON pc.operacao::INTEGER = o.id
-                        WHERE pc.dt_pag_cliente BETWEEN '{dt_inicio}' AND '{dt_final}'
-                        {FILTER_USER_ID}
-                        {FILTER_HAS_CONTRATO}
-                        ORDER BY pc.dt_pag_cliente DESC;
-                    """    
-            print(QUERY)           
             
-            pre_contratos = PreContrato.objects.raw(QUERY)              
-            serializer = PreContratoRelatorioMS(pre_contratos, many=True)
+            pre_contratos_repository = PreContratosRepository()
+            pre_contratos = pre_contratos_repository.get_pre_contratos(dt_inicio, dt_final, convenios, bancos, promotoras, corretores, operacoes, has_contrato, FILTER_USER_ID)
 
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            etl = EtlApuracaoPreContratos()
+            data = etl.execute(pre_contratos)
+
+            return Response(data=data, status=status.HTTP_200_OK)
 
         except Exception as error:
             print("Error: ", error)
