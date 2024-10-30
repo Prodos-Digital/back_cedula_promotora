@@ -43,7 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     created = models.DateTimeField(default=timezone.now)
     updated = models.DateTimeField(default=timezone.now)
-    sistema_origem = models.CharField(null=True, blank=True, max_length=50)
+    sistema_origem = models.CharField(null=True, blank=True, max_length=50, default="cedula")
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

@@ -24,7 +24,7 @@ class ClientesRepository():
                 ORDER BY cc.id DESC ;
             """      
         
-        print(SQL)
+        #print(SQL)
 
         with connection.cursor() as cursor:   
 
