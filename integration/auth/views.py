@@ -59,19 +59,13 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
 
             if User.objects.filter(email=data['email']).exists():
                 return Response(status=status.HTTP_403_FORBIDDEN)
-            
-            data["password"] = '12345678'            
+
+            data["password"] = '12345678'    
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
+
             user = serializer.save()
 
-            # Generate JWT tokens
-            # refresh = RefreshToken.for_user(user)
-            # token_data = {
-            #     "refresh": str(refresh),
-            #     "token": str(refresh.access_token),
-            # }
-        
             assign_role(user, 'app_permissions')
             assign_role(user, 'menu_permissions')     
                    
@@ -79,7 +73,6 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
             permissions = {perm: False for role in roles for perm in role.available_permissions}
          
             user_data = serializer.data
-            #user_data.update(token_data)
             user_data['permissions'] = permissions
 
             return Response(user_data, status=status.HTTP_201_CREATED)
