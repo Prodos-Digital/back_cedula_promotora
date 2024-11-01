@@ -29,17 +29,23 @@ class LoginSerializer(TokenObtainPairSerializer):
 class RegistrationSerializer(UserSerializer):
     password = serializers.CharField(max_length=128, min_length=8, write_only=True, required=True)
     email = serializers.EmailField(required=True, write_only=True, max_length=128)
+    sistema_origem = serializers.CharField(max_length=50, allow_null=True, allow_blank=True)
 
     class Meta:
         model = User
         fields = '__all__'
 
     def create(self, validated_data):
+        sistema_origem = validated_data.pop('sistema_origem', None)
 
         try:
             user = User.objects.get(email=validated_data['email'])
 
         except ObjectDoesNotExist:
             user = User.objects.create_user(**validated_data)
+            
+            if sistema_origem is not None:
+                user.sistema_origem = sistema_origem
+                user.save()
 
         return user

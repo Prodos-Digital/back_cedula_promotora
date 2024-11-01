@@ -35,7 +35,7 @@ class CargaClientes():
             print('cliente>>', data)
 
 if __name__ == '__main__':
-    from integration.carga_cliente import CargaClientes
+    from integration.scripts.carga_cliente import CargaClientes
 
     carga = CargaClientes()
     carga.get_cliente()
