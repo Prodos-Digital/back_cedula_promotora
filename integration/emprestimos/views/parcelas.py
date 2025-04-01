@@ -55,7 +55,7 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
 
         try:
             data = request.data
-            print(data)
+            #print(data)
 
             if data['tp_pagamento'] == 'vlr_total' or data['tp_pagamento'] == 'parcial':
 
@@ -76,6 +76,8 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
                     
             else:
                 with transaction.atomic():
+                    print('Entrou aqui no if da parcela!')
+
                     parcelas = EmprestimoParcela.objects.filter(
                         emprestimo=data['emprestimo'],
                         nr_parcela__gte=data['nr_parcela']
@@ -95,8 +97,16 @@ class EmprestimoParcelasViewSet(viewsets.ModelViewSet):
                         dt_prev_pag_parcial_restante=None
                     )
 
+                    dia_pagamento_primeira_parcela = parcela_a_copiar.dt_vencimento.day                    
+
                     for parcela in parcelas:
-                        due_date = (parcela.dt_vencimento + relativedelta(months=1))                       
+                        due_date = parcela.dt_vencimento + relativedelta(months=1)
+
+                        try:
+                            due_date = due_date.replace(day=dia_pagamento_primeira_parcela)
+                        except ValueError:
+                            due_date = due_date + relativedelta(day=31)
+                        
                         parcela.dt_vencimento = due_date
                         
                         if parcela.status_pagamento == 'pago_parcial':
