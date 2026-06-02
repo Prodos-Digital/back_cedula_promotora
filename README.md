@@ -24,6 +24,16 @@ Para rodar esse projeto, você vai precisar adicionar as seguintes variáveis de
 
 `DB_PORT`
 
+### Backup no admin (PostgreSQL)
+
+O `pg_dump` / `psql` do PATH têm de ser da **mesma major** (ou mais nova) que o servidor. Se o RDS for PG 17 e o Homebrew tiver só o cliente 14, instale o 17 e aponte no `.env`:
+
+`PG_DUMP_BIN` — caminho absoluto para `pg_dump` (ex.: `/opt/homebrew/opt/postgresql@17/bin/pg_dump`)
+
+`PSQL_BIN` — caminho absoluto para `psql` (ex.: `/opt/homebrew/opt/postgresql@17/bin/psql`)
+
+No Apple Silicon o prefixo costuma ser `/opt/homebrew/opt/...`; no Intel, `/usr/local/opt/...`.
+
 ## Rodando localmente
 
 Para rodar o projeto localmente:
@@ -36,6 +46,15 @@ Para rodar o projeto localmente:
 
   python3 manage.py runserver 127.0.0.1:8005
 ```
+
+## Docker (Postgres + API nesta pasta)
+
+```bash
+cp .env.example .env
+docker compose up -d --build
+```
+
+Ver `DOCKER.md` e `.env.example` (variáveis `POSTGRES_*`, `DJANGO_SECRET_KEY`, `ALLOWED_HOSTS`, etc.).
 
 ## Autor
 

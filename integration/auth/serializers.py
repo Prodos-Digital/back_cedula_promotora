@@ -13,9 +13,19 @@ User = get_user_model()
 class LoginSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
+        uf = self.username_field
+        if attrs.get(uf):
+            attrs[uf] = attrs[uf].strip().lower()
+
         data = super().validate(attrs)
 
         refresh = self.get_token(self.user)
+
+        # Contas criadas só no Admin costumam vir sem sistema_origem; alinha para o frontend.
+        if self.user.is_superuser and not (self.user.sistema_origem or "").strip():
+            self.user.sistema_origem = "emprestimo"
+            self.user.updated = timezone.now()
+            self.user.save(update_fields=["sistema_origem", "updated"])
 
         data['user'] = UserSerializer(self.user).data
         data['refresh'] = str(refresh)

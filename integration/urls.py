@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from integration.core import db_backup_views
 from integration.core.views import clientes, contratos, despesas, lojas, pre_contratos, futuros_contratos 
 from integration.core.views.resources import promotoras, convenios, bancos, corretores, operacoes, natureza_despesa, canal_aquisicao_clientes 
 
@@ -21,7 +22,17 @@ router.register(r'resources/canal-aquisicao-clientes', canal_aquisicao_clientes.
 router.register(r'futuros-contratos', futuros_contratos.FuturoContratoViewSet, basename='futuros-contratos')
 
 urlpatterns = [
-    #path('admin/', admin.site.urls),
+    path(
+        'admin/tools/db-dump/',
+        admin.site.admin_view(db_backup_views.admin_database_dump),
+        name='admin_db_dump',
+    ),
+    path(
+        'admin/tools/db-restore/',
+        admin.site.admin_view(db_backup_views.admin_database_restore),
+        name='admin_db_restore',
+    ),
+    path('admin/', admin.site.urls),
     path('', include('django.contrib.auth.urls')),
     path('integration/', include(router.urls)),
     path('integration/', include(('integration.users.routers', 'users'), namespace='users-api')),

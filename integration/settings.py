@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 from pathlib import Path
-from decouple import config
+from decouple import config, Csv
 from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,12 +23,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@$f3v$6a&)$o&2t#hs@r&q15m_%10o!a(yb2y4d$g7jch7x16t'
+# Docker Compose define SECRET_KEY no contentor; no .env local pode usar só DJANGO_SECRET_KEY.
+SECRET_KEY = config("SECRET_KEY", default=None) or config(
+    "DJANGO_SECRET_KEY",
+    default="django-insecure-@$f3v$6a&)$o&2t#hs@r&q15m_%10o!a(yb2y4d$g7jch7x16t",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DJANGO_DEBUG", default=True, cast=bool)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'back-cedula-promotora-b470626c27a2.herokuapp.com'] 
+ALLOWED_HOSTS = config(
+    "ALLOWED_HOSTS",
+    default="127.0.0.1,localhost,back-cedula-promotora-b470626c27a2.herokuapp.com",
+    cast=Csv(),
+)
 
 
 # Application definition
@@ -50,6 +58,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -63,7 +72,7 @@ ROOT_URLCONF = 'integration.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,26 +91,42 @@ WSGI_APPLICATION = 'integration.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-"""
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+USE_SQLITE = config("USE_SQLITE", default="false").lower() in ("1", "true", "yes")
+
+if USE_SQLITE:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
-"""
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": config("DB_NAME"),
+            "USER": config("DB_USER"),
+            "PASSWORD": config("DB_PASSWORD"),
+            "HOST": config("DB_HOST"),
+            "PORT": config("DB_PORT"),
+        },
+    }
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config("DB_NAME"),
-        'USER': config("DB_USER"),
-        'PASSWORD': config("DB_PASSWORD"),
-        'HOST': config("DB_HOST"),
-        'PORT': config("DB_PORT"),
-    },
-}
+# Clientes PostgreSQL para backup no admin: a versão major do pg_dump/psql deve ser
+# >= à do servidor (ex.: servidor 17 → instale postgresql@17 e aponte o caminho abaixo).
+PG_DUMP_BIN = config("PG_DUMP_BIN", default="pg_dump")
+PSQL_BIN = config("PSQL_BIN", default="psql")
+# CSV de nomes de schema (só [A-Za-z0-9_-]) extra a fazer DROP antes do restore SQL no admin.
+_pg_extra_drop = config("PG_RESTORE_PREAMBLE_EXTRA_SCHEMAS", default="")
+PG_RESTORE_PREAMBLE_EXTRA_SCHEMAS = tuple(
+    p.strip() for p in _pg_extra_drop.split(",") if p.strip()
+)
+# Se true: antes do SQL do dump, faz DROP/CREATE do schema public (dump completo de produção).
+# Sem isto, tabelas já criadas por migrate() fazem falhar o CREATE TABLE do dump e o psql
+# para (ON_ERROR_STOP) — os INSERT/COPY seguintes não correm e “faltam dados”.
+PG_RESTORE_RESET_PUBLIC_SCHEMA = config(
+    "PG_RESTORE_RESET_PUBLIC_SCHEMA", default="false"
+).lower() in ("1", "true", "yes", "on")
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -156,6 +181,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+WHITENOISE_AUTOREFRESH = DEBUG
+
+# Importação de dumps SQL pelo admin (corpo do POST pode ser grande)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 256 * 1024 * 1024  # 256 MiB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

@@ -1,0 +1,54 @@
+# Stack isolada: PostgreSQL 17 + Django (Gunicorn)
+# Uso: cp .env.example .env  →  docker compose up -d --build
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cedula}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cedula_altere_me}
+      POSTGRES_DB: ${POSTGRES_DB:-cedula}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/initdb:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "127.0.0.1:${POSTGRES_PUBLISH_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  # A cada `docker compose up -d` (ou restart do contentor), o ENTRYPOINT do
+  # Dockerfile corre: migrate → ensure_bootstrap_superuser → collectstatic → gunicorn.
+  # O bootstrap só olha para INIT_SUPERUSER_EMAIL: se esse utilizador já for superuser
+  # ativo, não altera; senão cria ou promove com INIT_SUPERUSER_PASSWORD.
+  backend:
+    build: .
+    restart: unless-stopped
+    environment:
+      USE_SQLITE: "false"
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: ${POSTGRES_DB:-cedula}
+      DB_USER: ${POSTGRES_USER:-cedula}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-cedula_altere_me}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-false}
+      # Incluir host.docker.internal quando o Next (ou outro cliente) chama a API por esse hostname.
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,host.docker.internal}
+      SECRET_KEY: ${DJANGO_SECRET_KEY:?}
+      INIT_SUPERUSER_EMAIL: ${INIT_SUPERUSER_EMAIL:-agencia.prodosdigital@gmail.com}
+      INIT_SUPERUSER_PASSWORD: ${INIT_SUPERUSER_PASSWORD:-123senha}
+      PG_DUMP_BIN: ${PG_DUMP_BIN:-pg_dump}
+      PSQL_BIN: ${PSQL_BIN:-psql}
+      PG_RESTORE_PREAMBLE_EXTRA_SCHEMAS: ${PG_RESTORE_PREAMBLE_EXTRA_SCHEMAS:-}
+      PG_RESTORE_RESET_PUBLIC_SCHEMA: ${PG_RESTORE_RESET_PUBLIC_SCHEMA:-false}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_PUBLISH_PORT:-8005}:8005"
+
+volumes:
+  postgres_data:

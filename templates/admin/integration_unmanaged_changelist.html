@@ -1,0 +1,11 @@
+{% extends "admin/change_list.html" %}
+{% block content %}
+{% if integration_missing_db_table %}
+<p class="errornote" style="margin-bottom: 1em;">
+  A tabela <code>{{ integration_missing_db_table }}</code> não existe nesta base de dados.
+  Os modelos de empréstimos (prefixo <code>emp_</code>) e várias tabelas <code>core_*</code> vêm do dump de produção — importe o SQL
+  Consulte <code>DOCKER.md</code> na pasta <code>back_cedula_promotora</code> (importar dump) ou use o restauro de base na página inicial do admin.
+</p>
+{% endif %}
+{{ block.super }}
+{% endblock %}

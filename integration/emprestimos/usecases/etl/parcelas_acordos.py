@@ -6,13 +6,13 @@ class EtlParcelasAcordos():
 
     def empty_object(self):
         return {
-                    'data': [],
-                    'indicadores': {
-                        "vl_tt_juros_adicional": df["vl_juros_adicional"].sum(),
-                        "vl_tt_capital_giro": df["vl_capital_giro"].sum(),    
-                        "qtd_parcelas": df["id"].count(),
-                    }
-                }
+            "data": [],
+            "indicadores": {
+                "vl_tt_juros_adicional": 0,
+                "vl_tt_capital_giro": 0,
+                "qtd_parcelas": 0,
+            },
+        }
 
     def execute(self, data):       
 

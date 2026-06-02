@@ -1,0 +1,85 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Importar dump do banco | {{ block.super }}{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Início</a>
+  &rsaquo; Importar dump
+</div>
+{% endblock %}
+{% block content %}
+<h1>Importar dump do banco de dados</h1>
+
+{% if messages %}
+<ul class="messagelist">
+  {% for message in messages %}
+  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+<div class="module aligned" style="max-width: 720px;">
+  {% if is_postgres %}
+  <p>
+    Envie o ficheiro <strong>.sql</strong> gerado por “Baixar dump completo” ou um
+    <code>pg_dump</code> em formato plain SQL. O conteúdo será aplicado com <code>psql -f</code> na base
+    configurada no Django.
+  </p>
+  <p>
+    <strong>Dump completo de produção (todos os dados):</strong> se a base local já correu
+    <code>migrate</code>, as tabelas em <code>public</code> já existem e o <code>CREATE TABLE</code>
+    do dump falha; o <code>psql</code> para no primeiro erro (<code>ON_ERROR_STOP</code>) e
+    os <code>COPY</code>/<code>INSERT</code> seguintes <strong>não executam</strong>.
+    Para o dump recriar tabelas e inserir <strong>tudo</strong>, marque a opção abaixo
+    (ou defina <code>PG_RESTORE_RESET_PUBLIC_SCHEMA=true</code> no <code>.env</code>{% if pg_restore_reset_public_env %};
+    neste ambiente essa variável já está ativa — o import repõe <code>public</code> mesmo sem marcar a caixa{% endif %}).
+    Isto apaga todo o conteúdo do schema <code>public</code> antes do ficheiro; só faça se o dump for uma cópia completa da mesma base.
+  </p>
+  <p>
+    Antes do ficheiro, o restore executa também
+    <code>DROP SCHEMA IF EXISTS … CASCADE</code> para schemas que muitos dumps voltam a recriar
+    (por defeito: <code>_heroku</code>, <code>heroku_ext</code>, <code>rede-gov</code>, <code>tst</code>).
+    Pode acrescentar mais nomes no <code>.env</code> com
+    <code>PG_RESTORE_PREAMBLE_EXTRA_SCHEMAS=outro_um,outro_dois</code> (só letras, números, <code>_</code> e <code>-</code>).
+    Isto evita erros do tipo “schema … already exists” em re-importações.
+  </p>
+  {% elif is_sqlite %}
+  <p>
+    Envie o ficheiro <strong>.sql</strong> (texto gerado por <code>sqlite3 ficheiro.db .dump</code> ou pelo
+    botão de download aqui). O SQL é aplicado com <code>sqlite3</code> na base atual; o ficheiro
+    <code>.sqlite3</code> anterior é copiado para <code>*.sqlite3.bak-admin</code> antes de
+    recriar. <strong>Reinicie o servidor</strong> se notar erros de ligação.
+  </p>
+  {% else %}
+  <p class="errornote">Este motor de base de dados não tem restore automático configurado.</p>
+  {% endif %}
+
+  {% if is_postgres or is_sqlite %}
+  <form method="post" enctype="multipart/form-data" style="margin-top: 1.5em;">
+    {% csrf_token %}
+    <div class="form-row">
+      <label for="id_dump_file">Ficheiro de dump:</label>
+      <input type="file" name="dump_file" id="id_dump_file" required>
+    </div>
+    {% if is_postgres %}
+    <div class="form-row" style="margin-top: 1em; padding: 10px; background: #fff3cd; border: 1px solid #c9a227;">
+      <label for="id_reset_public">
+        <input type="checkbox" name="reset_public" value="1" id="id_reset_public">
+        <strong>Repor o schema <code>public</code> antes do import</strong> (DROP … CASCADE + CREATE),
+        para o dump de produção poder criar tabelas e carregar <strong>todos</strong> os dados.
+      </label>
+    </div>
+    {% endif %}
+    <div class="form-row" style="margin-top: 1em;">
+      <label>
+        <input type="checkbox" name="confirm" value="1" required>
+        Confirmo que quero <strong>aplicar este dump</strong> na base atual e assumo o risco.
+      </label>
+    </div>
+    <div class="submit-row" style="margin-top: 1.5em;">
+      <input type="submit" value="Importar" class="default" style="background: #ba2121;">
+      <a href="{% url 'admin:index' %}" class="button cancel-link">Cancelar</a>
+    </div>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

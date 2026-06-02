@@ -61,6 +61,10 @@ class Despesa(models.Model):
     natureza_despesa = models.CharField(max_length=100, null=True, blank=True)
     id_loja = models.IntegerField(null=True, blank=True)
 
+    class Meta:
+        managed = False
+        db_table = 'core_despesa'
+
 class Emprestimo(models.Model):
     id = models.BigAutoField(primary_key=True)
     dt_emprestimo = models.DateField(blank=True, null=True)
@@ -93,6 +97,10 @@ class Lojas(models.Model):
     id = models.BigAutoField(primary_key=True) 
     is_active = models.BooleanField(default=True, blank=True, null=True)
     sg_loja = models.CharField(max_length=30, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'core_lojas'
     
 class Promotora(models.Model):
     id = models.BigAutoField(primary_key=True) 

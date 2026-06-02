@@ -1,0 +1,119 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static log admin_sections %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}">{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block nav-sidebar %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <style>
+    .admin-area-title {
+      margin: 1.35em 0 0.4em;
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: #417690;
+      border-bottom: 1px solid #e2e2e2;
+      padding-bottom: 0.25em;
+    }
+    .admin-area-title:first-of-type { margin-top: 0; }
+    .admin-area-note { color: #666; font-size: 0.85rem; margin: 0 0 0.75em; }
+  </style>
+
+  <div class="module" style="margin-bottom: 20px;">
+    <table summary="Ferramentas de backup">
+      <caption>
+        <a href="#" class="section">Backup / restore do banco de dados</a>
+      </caption>
+      <tbody>
+        <tr>
+          <th scope="row">
+            <a href="{% url 'admin_db_dump' %}">Baixar dump completo</a>
+          </th>
+          <td>
+            Ficheiro <code>.sql</code> (texto): PostgreSQL via <code>pg_dump</code>,
+            SQLite via <code>sqlite3 … .dump</code> — sempre a base a que o Django está ligado.
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">
+            <a href="{% url 'admin_db_restore' %}">Importar dump</a>
+          </th>
+          <td>
+            <strong>Atenção:</strong> substitui dados no mesmo banco de destino.
+            Apenas superutilizadores. Teste primeiro em cópia local.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  {% with cedula=app_list|apps_for_section:"cedula" %}
+  {% if cedula %}
+  <h2 class="admin-area-title">Sistema Cédula (promotora)</h2>
+  <p class="admin-area-note">Clientes, contratos, pré-contratos, despesas, recursos e tabelas <code>core_*</code> / promotora.</p>
+  {% include "admin/app_list.html" with app_list=cedula show_changelinks=True %}
+  {% endif %}
+  {% endwith %}
+
+  {% with emp=app_list|apps_for_section:"emprestimos" %}
+  {% if emp %}
+  <h2 class="admin-area-title">Sistema de empréstimos</h2>
+  <p class="admin-area-note">Dados da API de empréstimos (tabelas <code>emp_*</code>).</p>
+  {% include "admin/app_list.html" with app_list=emp show_changelinks=True %}
+  {% endif %}
+  {% endwith %}
+
+  {% with contas=app_list|apps_for_section:"contas" %}
+  {% if contas %}
+  <h2 class="admin-area-title">Contas e permissões</h2>
+  <p class="admin-area-note">Utilizadores da app e grupos/permissões do Django.</p>
+  {% include "admin/app_list.html" with app_list=contas show_changelinks=True %}
+  {% endif %}
+  {% endwith %}
+
+  {% with outros=app_list|apps_for_section:"outros" %}
+  {% if outros %}
+  <h2 class="admin-area-title">Outros</h2>
+  {% include "admin/app_list.html" with app_list=outros show_changelinks=True %}
+  {% endif %}
+  {% endwith %}
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<div id="content-related">
+    <div class="module" id="recent-actions-module">
+        <h2>{% translate 'Recent actions' %}</h2>
+        <h3>{% translate 'My actions' %}</h3>
+            {% get_admin_log 10 as admin_log for_user user %}
+            {% if not admin_log %}
+            <p>{% translate 'None available' %}</p>
+            {% else %}
+            <ul class="actionlist">
+            {% for entry in admin_log %}
+            <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+                {% if entry.is_deletion or not entry.get_admin_url %}
+                    {{ entry.object_repr }}
+                {% else %}
+                    <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                {% endif %}
+                <br>
+                {% if entry.content_type %}
+                    <span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
+                {% else %}
+                    <span class="mini quiet">{% translate 'Unknown content' %}</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+    </div>
+</div>
+{% endblock %}
