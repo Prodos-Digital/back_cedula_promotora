@@ -31,6 +31,13 @@ Scripts em `docker/postgres/initdb/` só correm na **primeira** criação do vol
 
 `postgres_data` persiste entre reinícios. `docker compose down -v` apaga a base.
 
+## VPS Hostinger (Nginx 443)
+
+Guia: **`deploy/hostinger/README.md`**. O `docker-compose.yml` publica o Gunicorn em **127.0.0.1** por defeito (`BACKEND_PUBLISH` no `.env` para alterar). Com Nginx à frente, define `BEHIND_HTTPS_PROXY=true` no `.env`.
+
+```bash
+docker compose up -d --build
+```
 ## Front noutro compose
 
 O projeto Next.js tem o seu próprio `docker-compose` na pasta `web_sistema_emprestimos`. Lá configure `NEXT_INTEGRATION_URL` para apontar para esta API (ex.: `http://127.0.0.1:8005/integration` quando o Next corre na máquina e o backend está publicado na porta 8005). Se usar `host.docker.internal`, o Django precisa desse nome em `ALLOWED_HOSTS` (o `docker-compose` deste backend já inclui por defeito).

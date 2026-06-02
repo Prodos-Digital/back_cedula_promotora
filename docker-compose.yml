@@ -1,5 +1,8 @@
 # Stack isolada: PostgreSQL 17 + Django (Gunicorn)
 # Uso: cp .env.example .env  →  docker compose up -d --build
+#
+# Publicação no host: por defeito só loopback (127.0.0.1:porta) — adequado a Nginx na VPS.
+# Para ouvir em todas as interfaces (ex. LAN): no .env → BACKEND_PUBLISH=0.0.0.0:8005
 
 services:
   db:
@@ -37,6 +40,7 @@ services:
       DJANGO_DEBUG: ${DJANGO_DEBUG:-false}
       # Incluir host.docker.internal quando o Next (ou outro cliente) chama a API por esse hostname.
       ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,host.docker.internal}
+      BEHIND_HTTPS_PROXY: ${BEHIND_HTTPS_PROXY:-false}
       SECRET_KEY: ${DJANGO_SECRET_KEY:?}
       INIT_SUPERUSER_EMAIL: ${INIT_SUPERUSER_EMAIL:-agencia.prodosdigital@gmail.com}
       INIT_SUPERUSER_PASSWORD: ${INIT_SUPERUSER_PASSWORD:-123senha}
@@ -48,7 +52,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "${BACKEND_PUBLISH_PORT:-8005}:8005"
+      - "${BACKEND_PUBLISH:-127.0.0.1:8005}:8005"
 
 volumes:
   postgres_data:

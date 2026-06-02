@@ -38,6 +38,19 @@ ALLOWED_HOSTS = config(
     cast=Csv(),
 )
 
+# Nginx na VPS (HTTPS) — ver deploy/hostinger/README.md
+_behind_https_proxy = config("BEHIND_HTTPS_PROXY", default="false").lower() in (
+    "1",
+    "true",
+    "yes",
+    "on",
+)
+if _behind_https_proxy:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    USE_X_FORWARDED_HOST = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
 
 # Application definition
 
