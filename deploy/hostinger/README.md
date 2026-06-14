@@ -55,17 +55,18 @@ sudo bash deploy/hostinger/scripts/gerar-certificado-selfsigned.sh SEU.IP.PUBLIC
 
 Configura o Nginx com o ficheiro `deploy/hostinger/nginx/vhost-ip-https.conf` (ajusta caminhos `ssl_certificate` se mudares a pasta). Instruções completas de cópia e `nginx -t` estão no README do frontend, secção Nginx.
 
-## 5. Quando tiveres domínio
+## 5. Domínio e HTTPS (Let's Encrypt)
 
-1. Aponta o **A** para o IP da VPS.
-2. Atualiza `ALLOWED_HOSTS`, `NEXTAUTH_URL` e (se aplicável) `NEXT_INTEGRATION_URL`.
-3. Usa **Certbot** (`certbot --nginx`) e remove ou comenta o bloco `ssl_certificate` autoassinado em favor dos ficheiros do Let’s Encrypt.
+Guia completo com `faturamentocedulapromotora.com.br`, Certbot e ficheiro **`nginx/vhost-faturamentocedulapromotora.com.br.conf`**: ver **`web_sistema_emprestimos/deploy/hostinger/README.md`** (secção 8).
+
+No `.env` deste backend, inclui o hostname em `ALLOWED_HOSTS` e mantém `BEHIND_HTTPS_PROXY=true` atrás do Nginx.
 
 ## Ficheiros nesta pasta
 
 | Ficheiro | Função |
 |----------|--------|
-| `nginx/vhost-ip-https.conf` | Proxy: `/` → Next, `/integration` e `/admin` → Django |
+| `nginx/vhost-ip-https.conf` | Proxy com HTTPS por **IP** (autoassinado) |
+| `nginx/vhost-faturamentocedulapromotora.com.br.conf` | Igual ao do frontend — HTTPS **Let's Encrypt** + proxy |
 | `scripts/gerar-certificado-selfsigned.sh` | Gera `.crt` / `.key` com SAN=IP |
 
 O `docker-compose.yml` desta pasta mapeia o Gunicorn em **127.0.0.1:8005** por defeito (`${BACKEND_PUBLISH:-127.0.0.1:8005}`; opcional no `.env` — ver `.env.example`).
